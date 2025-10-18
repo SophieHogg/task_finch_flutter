@@ -1,9 +1,16 @@
+import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hooks_riverpod/legacy.dart';
+import 'package:todos/components/add_task_dialog.dart';
+import 'package:todos/data/database.dart';
+import 'package:uuid/uuid.dart';
+import 'package:uuid/v4.dart';
 
-import 'todo.dart';
+import 'components/navbar.dart';
+import 'components/task_item.dart';
+import 'todoProvider.dart';
 
 /// Some keys used for testing
 final addTodoKey = UniqueKey();
@@ -15,7 +22,9 @@ final allFilterKey = UniqueKey();
 ///
 /// We are using [NotifierProvider] here as a `List<Todo>` is a complex
 /// object, with advanced business logic like how to edit a todo.
-final todoListProvider = NotifierProvider<TodoList, List<Task>>(TodoList.new);
+final todoListProvider = AsyncNotifierProvider<TodoList, List<Task>>(
+  TodoList.new,
+);
 
 /// The different ways to filter the list of todos
 enum TodoListFilter { all, active, completed }
@@ -35,7 +44,12 @@ final todoListFilter = StateProvider((_) => TodoListFilter.all);
 /// This will also optimize unneeded rebuilds if the todo-list changes, but the
 /// number of uncompleted todos doesn't (such as when editing a todo).
 final uncompletedTodosCount = Provider<int>((ref) {
-  return ref.watch(todoListProvider).where((todo) => !todo.completed).length;
+  return ref
+          .watch(todoListProvider)
+          .value
+          ?.where((todo) => !todo.completed)
+          .length ??
+      0;
 });
 
 /// The list of todos after applying of [todoListFilter].
@@ -45,18 +59,39 @@ final uncompletedTodosCount = Provider<int>((ref) {
 final filteredTodos = Provider<List<Task>>((ref) {
   final filter = ref.watch(todoListFilter);
   final todos = ref.watch(todoListProvider);
-
   switch (filter) {
     case TodoListFilter.completed:
-      return todos.where((todo) => todo.completed).toList();
+      return todos.value?.where((todo) => todo.completed).toList() ?? [];
     case TodoListFilter.active:
-      return todos.where((todo) => !todo.completed).toList();
+      return todos.value?.where((todo) => !todo.completed).toList() ?? [];
     case TodoListFilter.all:
-      return todos;
+      return todos.value ?? [];
   }
 });
+late AppDatabase database;
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  database = AppDatabase();
+
+  await database
+      .into(database.tasks)
+      .insert(
+        TasksCompanion.insert(
+          id: Uuid().v4().toString(),
+          title: 'todo: finish drift setup',
+          description: Value(
+            'We can now write queries and define our own tables.',
+          ),
+          completed: false,
+          createdOn: DateTime.now(),
+        ),
+      );
+  List<Task> allItems = await database.select(database.tasks).get();
+
+  print('items in database: $allItems');
+
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -83,7 +118,6 @@ class Home extends HookConsumerWidget {
         body: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
           children: [
-            const Title(),
             TextField(
               key: addTodoKey,
               controller: newTodoController,
@@ -97,26 +131,44 @@ class Home extends HookConsumerWidget {
             ),
             const SizedBox(height: 42),
             const Toolbar(),
+            AddTaskDialog(),
             if (todos.isNotEmpty) const Divider(height: 0),
             for (var i = 0; i < todos.length; i++) ...[
               if (i > 0) const Divider(height: 0),
               Dismissible(
                 key: ValueKey(todos[i].id),
                 onDismissed: (_) {
-                  ref.read(todoListProvider.notifier).remove(todos[i]);
+                  ref.read(todoListProvider.notifier).delete(todos[i].id);
                 },
                 child: ProviderScope(
-                  overrides: [_currentTodo.overrideWithValue(todos[i])],
+                  overrides: [currentTodo.overrideWithValue(todos[i])],
                   child: const TodoItem(),
                 ),
               ),
             ],
           ],
         ),
+        floatingActionButton: const FloatingActionButton(
+          onPressed: null,
+          child: const Icon(Icons.add),
+        ),
+        bottomNavigationBar: const Navbar(),
       ),
     );
   }
 }
+
+/// A provider which exposes the [Task] displayed by a [TodoItem].
+///
+/// By retrieving the [Task] through a provider instead of through its
+/// constructor, this allows [TodoItem] to be instantiated using the `const` keyword.
+///
+/// This ensures that when we add/remove/edit todos, only what the
+/// impacted widgets rebuilds, instead of the entire list of items.
+final currentTodo = Provider<Task>(
+  dependencies: const [],
+  (ref) => throw UnimplementedError(),
+);
 
 class Toolbar extends HookConsumerWidget {
   const Toolbar({super.key});
@@ -191,88 +243,6 @@ class Toolbar extends HookConsumerWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class Title extends StatelessWidget {
-  const Title({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Text(
-      'todos',
-      textAlign: TextAlign.center,
-      style: TextStyle(
-        color: Color.fromARGB(38, 47, 47, 247),
-        fontSize: 100,
-        fontWeight: FontWeight.w100,
-        fontFamily: 'Helvetica Neue',
-      ),
-    );
-  }
-}
-
-/// A provider which exposes the [Task] displayed by a [TodoItem].
-///
-/// By retrieving the [Task] through a provider instead of through its
-/// constructor, this allows [TodoItem] to be instantiated using the `const` keyword.
-///
-/// This ensures that when we add/remove/edit todos, only what the
-/// impacted widgets rebuilds, instead of the entire list of items.
-final _currentTodo = Provider<Task>(
-  dependencies: const [],
-  (ref) => throw UnimplementedError(),
-);
-
-/// The widget that that displays the components of an individual Todo Item
-class TodoItem extends HookConsumerWidget {
-  const TodoItem({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final todo = ref.watch(_currentTodo);
-    final itemFocusNode = useFocusNode();
-    final itemIsFocused = useIsFocused(itemFocusNode);
-
-    final textEditingController = useTextEditingController();
-    final textFieldFocusNode = useFocusNode();
-
-    return Material(
-      color: Colors.white,
-      elevation: 6,
-      child: Focus(
-        focusNode: itemFocusNode,
-        onFocusChange: (focused) {
-          if (focused) {
-            textEditingController.text = todo.title;
-          } else {
-            // Commit changes only when the textfield is unfocused, for performance
-            ref
-                .read(todoListProvider.notifier)
-                .edit(id: todo.id, description: textEditingController.text);
-          }
-        },
-        child: ListTile(
-          onTap: () {
-            itemFocusNode.requestFocus();
-            textFieldFocusNode.requestFocus();
-          },
-          leading: Checkbox(
-            value: todo.completed,
-            onChanged:
-                (value) => ref.read(todoListProvider.notifier).toggle(todo.id),
-          ),
-          title:
-              itemIsFocused
-                  ? TextField(
-                    autofocus: true,
-                    focusNode: textFieldFocusNode,
-                    controller: textEditingController,
-                  )
-                  : Text(todo.title),
-        ),
       ),
     );
   }
