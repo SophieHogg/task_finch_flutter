@@ -7,7 +7,7 @@ part 'database.g.dart';
 class Tasks extends Table {
   TextColumn get id => text().unique()();
   IntColumn get rId => integer().autoIncrement()();
-  TextColumn get title => text().withLength(min: 6, max: 32)();
+  TextColumn get title => text().withLength(min: 1, max: 32)();
   TextColumn get description => text().nullable()();
   BoolColumn get completed => boolean()();
   TextColumn get parentId => text().nullable()();

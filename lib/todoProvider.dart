@@ -1,5 +1,4 @@
 import 'package:drift/drift.dart';
-import 'package:flutter/foundation.dart' show immutable;
 import 'package:riverpod/riverpod.dart';
 import 'package:uuid/uuid.dart';
 
@@ -8,6 +7,18 @@ import 'main.dart';
 
 const _uuid = Uuid();
 
+class TaskAddRequest {
+  final String title;
+  final String? description;
+  final String? parentId;
+
+  const TaskAddRequest({
+    required this.title,
+    required this.description,
+    required this.parentId,
+  });
+}
+
 /// An object that controls a list of [Task].
 class TodoList extends AsyncNotifier<List<Task>> {
   @override
@@ -15,9 +26,17 @@ class TodoList extends AsyncNotifier<List<Task>> {
     return await database.select(database.tasks).get();
   }
 
-
-  void add(String description) {
-    // state = [...state, Task(id: _uuid.v4(), title: description)];
+  void add(TaskAddRequest taskAddRequest) async {
+    final TasksCompanion newTask = TasksCompanion(
+      title: Value(taskAddRequest.title),
+      description: Value(taskAddRequest.description),
+      createdOn: Value(DateTime.now()),
+      parentId: Value(taskAddRequest.parentId),
+      completed: Value(false),
+      id: Value(_uuid.v4()),
+    );
+    await (database.into(database.tasks).insert(newTask));
+    ref.invalidateSelf();
   }
 
   void toggle(String id) {}
@@ -34,13 +53,9 @@ class TodoList extends AsyncNotifier<List<Task>> {
   }
 
   void markIncomplete(String id) async {
-    await (database.update(database.tasks)
-      ..where((task) => task.id.isValue(id))).write(
-      TasksCompanion(
-        completed: Value(false),
-        completedOn: Value(null),
-      ),
-    );
+    await (database.update(database.tasks)..where(
+      (task) => task.id.isValue(id),
+    )).write(TasksCompanion(completed: Value(false), completedOn: Value(null)));
     ref.invalidateSelf();
   }
 

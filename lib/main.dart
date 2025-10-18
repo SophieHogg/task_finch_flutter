@@ -1,12 +1,10 @@
-import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hooks_riverpod/legacy.dart';
 import 'package:todos/components/add_task_dialog.dart';
 import 'package:todos/data/database.dart';
-import 'package:uuid/uuid.dart';
-import 'package:uuid/v4.dart';
+import 'package:collection/collection.dart';
 
 import 'components/navbar.dart';
 import 'components/task_item.dart';
@@ -65,7 +63,8 @@ final filteredTodos = Provider<List<Task>>((ref) {
     case TodoListFilter.active:
       return todos.value?.where((todo) => !todo.completed).toList() ?? [];
     case TodoListFilter.all:
-      return todos.value ?? [];
+      // ensure the incomplete tasks are at the top
+      return todos.value?.sortedByCompare((task) => task.completed, (a, b) => a ? 1 : -1) ?? [];
   }
 });
 late AppDatabase database;
@@ -75,19 +74,6 @@ void main() async {
 
   database = AppDatabase();
 
-  await database
-      .into(database.tasks)
-      .insert(
-        TasksCompanion.insert(
-          id: Uuid().v4().toString(),
-          title: 'todo: finish drift setup',
-          description: Value(
-            'We can now write queries and define our own tables.',
-          ),
-          completed: false,
-          createdOn: DateTime.now(),
-        ),
-      );
   List<Task> allItems = await database.select(database.tasks).get();
 
   print('items in database: $allItems');
@@ -110,7 +96,6 @@ class Home extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final todos = ref.watch(filteredTodos);
-    final newTodoController = useTextEditingController();
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -118,20 +103,8 @@ class Home extends HookConsumerWidget {
         body: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
           children: [
-            TextField(
-              key: addTodoKey,
-              controller: newTodoController,
-              decoration: const InputDecoration(
-                labelText: 'What needs to be done?',
-              ),
-              onSubmitted: (value) {
-                ref.read(todoListProvider.notifier).add(value);
-                newTodoController.clear();
-              },
-            ),
             const SizedBox(height: 42),
             const Toolbar(),
-            AddTaskDialog(),
             if (todos.isNotEmpty) const Divider(height: 0),
             for (var i = 0; i < todos.length; i++) ...[
               if (i > 0) const Divider(height: 0),
@@ -148,8 +121,22 @@ class Home extends HookConsumerWidget {
             ],
           ],
         ),
-        floatingActionButton: const FloatingActionButton(
-          onPressed: null,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return Dialog.fullscreen(
+                  child: AddTaskDialog(
+                    onAdd: (taskAddRequest) {
+                      ref.read(todoListProvider.notifier).add(taskAddRequest);
+                      Navigator.pop(context);
+                    },
+                  ),
+                );
+              },
+            );
+          },
           child: const Icon(Icons.add),
         ),
         bottomNavigationBar: const Navbar(),
