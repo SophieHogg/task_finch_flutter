@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:todos/components/priority_selector.dart';
 import 'package:todos/todoProvider.dart';
+
+import '../data/database.dart';
 
 class AddTaskDialog extends StatefulWidget {
   const AddTaskDialog({super.key, required this.onAdd});
@@ -15,6 +18,8 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
 
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
+
+  Priority priority = Priority.medium;
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +55,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
               minLines: 3,
               maxLines: 5,
             ),
+            PrioritySelector(priority: priority, onChangePriority: (newPriority) => priority = newPriority),
             Spacer(),
             ElevatedButton(
 
@@ -60,6 +66,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                     TaskAddRequest(
                       title: titleController.text.trim(),
                       description: descriptionController.text,
+                      priority: priority,
                       parentId: '1234',
                     ),
                   );

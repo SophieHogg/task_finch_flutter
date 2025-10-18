@@ -10,11 +10,13 @@ const _uuid = Uuid();
 class TaskAddRequest {
   final String title;
   final String? description;
+  final Priority priority;
   final String? parentId;
 
   const TaskAddRequest({
     required this.title,
     required this.description,
+    required this.priority,
     required this.parentId,
   });
 }
@@ -33,6 +35,7 @@ class TodoList extends AsyncNotifier<List<Task>> {
       createdOn: Value(DateTime.now()),
       parentId: Value(taskAddRequest.parentId),
       completed: Value(false),
+      priority: Value(taskAddRequest.priority),
       id: Value(_uuid.v4()),
     );
     await (database.into(database.tasks).insert(newTask));
@@ -72,5 +75,7 @@ class TodoList extends AsyncNotifier<List<Task>> {
   void delete(String id) async {
     await (database.delete(database.tasks)
       ..where((task) => task.id.isValue(id))).go();
+    ref.invalidateSelf();
+
   }
 }

@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -64,14 +65,15 @@ final filteredTodos = Provider<List<Task>>((ref) {
       return todos.value?.where((todo) => !todo.completed).toList() ?? [];
     case TodoListFilter.all:
       // ensure the incomplete tasks are at the top
-      return todos.value?.sortedByCompare((task) => task.completed, (a, b) => a ? 1 : -1) ?? [];
+  final incompleteTasks = todos.value?.where((task) => !task.completed).sortedBy((task) => task.priority.index);
+  final completeTasks = todos.value?.where((task) => task.completed).sortedBy((task) => task.priority.index);
+      return [...?incompleteTasks, ...?completeTasks];
   }
 });
 late AppDatabase database;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   database = AppDatabase();
 
   List<Task> allItems = await database.select(database.tasks).get();
@@ -93,6 +95,7 @@ class MyApp extends StatelessWidget {
 class Home extends HookConsumerWidget {
   const Home({super.key});
 
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final todos = ref.watch(filteredTodos);
@@ -110,7 +113,7 @@ class Home extends HookConsumerWidget {
               if (i > 0) const Divider(height: 0),
               Dismissible(
                 key: ValueKey(todos[i].id),
-                onDismissed: (_) {
+                onDismissed: (_) async {
                   ref.read(todoListProvider.notifier).delete(todos[i].id);
                 },
                 child: ProviderScope(

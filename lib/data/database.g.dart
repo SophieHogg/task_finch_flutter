@@ -69,6 +69,16 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
       'CHECK ("completed" IN (0, 1))',
     ),
   );
+  @override
+  late final GeneratedColumnWithTypeConverter<Priority, String> priority =
+      GeneratedColumn<String>(
+        'priority',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: Constant('medium'),
+      ).withConverter<Priority>($TasksTable.$converterpriority);
   static const VerificationMeta _parentIdMeta = const VerificationMeta(
     'parentId',
   );
@@ -109,6 +119,7 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
     title,
     description,
     completed,
+    priority,
     parentId,
     createdOn,
     completedOn,
@@ -217,6 +228,12 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
             DriftSqlType.bool,
             data['${effectivePrefix}completed'],
           )!,
+      priority: $TasksTable.$converterpriority.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}priority'],
+        )!,
+      ),
       parentId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}parent_id'],
@@ -237,6 +254,9 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
   $TasksTable createAlias(String alias) {
     return $TasksTable(attachedDatabase, alias);
   }
+
+  static JsonTypeConverter2<Priority, String, String> $converterpriority =
+      const EnumNameConverter<Priority>(Priority.values);
 }
 
 class Task extends DataClass implements Insertable<Task> {
@@ -245,6 +265,7 @@ class Task extends DataClass implements Insertable<Task> {
   final String title;
   final String? description;
   final bool completed;
+  final Priority priority;
   final String? parentId;
   final DateTime createdOn;
   final DateTime? completedOn;
@@ -254,6 +275,7 @@ class Task extends DataClass implements Insertable<Task> {
     required this.title,
     this.description,
     required this.completed,
+    required this.priority,
     this.parentId,
     required this.createdOn,
     this.completedOn,
@@ -268,6 +290,11 @@ class Task extends DataClass implements Insertable<Task> {
       map['description'] = Variable<String>(description);
     }
     map['completed'] = Variable<bool>(completed);
+    {
+      map['priority'] = Variable<String>(
+        $TasksTable.$converterpriority.toSql(priority),
+      );
+    }
     if (!nullToAbsent || parentId != null) {
       map['parent_id'] = Variable<String>(parentId);
     }
@@ -288,6 +315,7 @@ class Task extends DataClass implements Insertable<Task> {
               ? const Value.absent()
               : Value(description),
       completed: Value(completed),
+      priority: Value(priority),
       parentId:
           parentId == null && nullToAbsent
               ? const Value.absent()
@@ -311,6 +339,9 @@ class Task extends DataClass implements Insertable<Task> {
       title: serializer.fromJson<String>(json['title']),
       description: serializer.fromJson<String?>(json['description']),
       completed: serializer.fromJson<bool>(json['completed']),
+      priority: $TasksTable.$converterpriority.fromJson(
+        serializer.fromJson<String>(json['priority']),
+      ),
       parentId: serializer.fromJson<String?>(json['parentId']),
       createdOn: serializer.fromJson<DateTime>(json['createdOn']),
       completedOn: serializer.fromJson<DateTime?>(json['completedOn']),
@@ -325,6 +356,9 @@ class Task extends DataClass implements Insertable<Task> {
       'title': serializer.toJson<String>(title),
       'description': serializer.toJson<String?>(description),
       'completed': serializer.toJson<bool>(completed),
+      'priority': serializer.toJson<String>(
+        $TasksTable.$converterpriority.toJson(priority),
+      ),
       'parentId': serializer.toJson<String?>(parentId),
       'createdOn': serializer.toJson<DateTime>(createdOn),
       'completedOn': serializer.toJson<DateTime?>(completedOn),
@@ -337,6 +371,7 @@ class Task extends DataClass implements Insertable<Task> {
     String? title,
     Value<String?> description = const Value.absent(),
     bool? completed,
+    Priority? priority,
     Value<String?> parentId = const Value.absent(),
     DateTime? createdOn,
     Value<DateTime?> completedOn = const Value.absent(),
@@ -346,6 +381,7 @@ class Task extends DataClass implements Insertable<Task> {
     title: title ?? this.title,
     description: description.present ? description.value : this.description,
     completed: completed ?? this.completed,
+    priority: priority ?? this.priority,
     parentId: parentId.present ? parentId.value : this.parentId,
     createdOn: createdOn ?? this.createdOn,
     completedOn: completedOn.present ? completedOn.value : this.completedOn,
@@ -358,6 +394,7 @@ class Task extends DataClass implements Insertable<Task> {
       description:
           data.description.present ? data.description.value : this.description,
       completed: data.completed.present ? data.completed.value : this.completed,
+      priority: data.priority.present ? data.priority.value : this.priority,
       parentId: data.parentId.present ? data.parentId.value : this.parentId,
       createdOn: data.createdOn.present ? data.createdOn.value : this.createdOn,
       completedOn:
@@ -373,6 +410,7 @@ class Task extends DataClass implements Insertable<Task> {
           ..write('title: $title, ')
           ..write('description: $description, ')
           ..write('completed: $completed, ')
+          ..write('priority: $priority, ')
           ..write('parentId: $parentId, ')
           ..write('createdOn: $createdOn, ')
           ..write('completedOn: $completedOn')
@@ -387,6 +425,7 @@ class Task extends DataClass implements Insertable<Task> {
     title,
     description,
     completed,
+    priority,
     parentId,
     createdOn,
     completedOn,
@@ -400,6 +439,7 @@ class Task extends DataClass implements Insertable<Task> {
           other.title == this.title &&
           other.description == this.description &&
           other.completed == this.completed &&
+          other.priority == this.priority &&
           other.parentId == this.parentId &&
           other.createdOn == this.createdOn &&
           other.completedOn == this.completedOn);
@@ -411,6 +451,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
   final Value<String> title;
   final Value<String?> description;
   final Value<bool> completed;
+  final Value<Priority> priority;
   final Value<String?> parentId;
   final Value<DateTime> createdOn;
   final Value<DateTime?> completedOn;
@@ -420,6 +461,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
     this.title = const Value.absent(),
     this.description = const Value.absent(),
     this.completed = const Value.absent(),
+    this.priority = const Value.absent(),
     this.parentId = const Value.absent(),
     this.createdOn = const Value.absent(),
     this.completedOn = const Value.absent(),
@@ -430,6 +472,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
     required String title,
     this.description = const Value.absent(),
     required bool completed,
+    this.priority = const Value.absent(),
     this.parentId = const Value.absent(),
     required DateTime createdOn,
     this.completedOn = const Value.absent(),
@@ -443,6 +486,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
     Expression<String>? title,
     Expression<String>? description,
     Expression<bool>? completed,
+    Expression<String>? priority,
     Expression<String>? parentId,
     Expression<DateTime>? createdOn,
     Expression<DateTime>? completedOn,
@@ -453,6 +497,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
       if (title != null) 'title': title,
       if (description != null) 'description': description,
       if (completed != null) 'completed': completed,
+      if (priority != null) 'priority': priority,
       if (parentId != null) 'parent_id': parentId,
       if (createdOn != null) 'created_on': createdOn,
       if (completedOn != null) 'completed_on': completedOn,
@@ -465,6 +510,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
     Value<String>? title,
     Value<String?>? description,
     Value<bool>? completed,
+    Value<Priority>? priority,
     Value<String?>? parentId,
     Value<DateTime>? createdOn,
     Value<DateTime?>? completedOn,
@@ -475,6 +521,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
       title: title ?? this.title,
       description: description ?? this.description,
       completed: completed ?? this.completed,
+      priority: priority ?? this.priority,
       parentId: parentId ?? this.parentId,
       createdOn: createdOn ?? this.createdOn,
       completedOn: completedOn ?? this.completedOn,
@@ -499,6 +546,11 @@ class TasksCompanion extends UpdateCompanion<Task> {
     if (completed.present) {
       map['completed'] = Variable<bool>(completed.value);
     }
+    if (priority.present) {
+      map['priority'] = Variable<String>(
+        $TasksTable.$converterpriority.toSql(priority.value),
+      );
+    }
     if (parentId.present) {
       map['parent_id'] = Variable<String>(parentId.value);
     }
@@ -519,6 +571,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
           ..write('title: $title, ')
           ..write('description: $description, ')
           ..write('completed: $completed, ')
+          ..write('priority: $priority, ')
           ..write('parentId: $parentId, ')
           ..write('createdOn: $createdOn, ')
           ..write('completedOn: $completedOn')
@@ -545,6 +598,7 @@ typedef $$TasksTableCreateCompanionBuilder =
       required String title,
       Value<String?> description,
       required bool completed,
+      Value<Priority> priority,
       Value<String?> parentId,
       required DateTime createdOn,
       Value<DateTime?> completedOn,
@@ -556,6 +610,7 @@ typedef $$TasksTableUpdateCompanionBuilder =
       Value<String> title,
       Value<String?> description,
       Value<bool> completed,
+      Value<Priority> priority,
       Value<String?> parentId,
       Value<DateTime> createdOn,
       Value<DateTime?> completedOn,
@@ -593,6 +648,12 @@ class $$TasksTableFilterComposer extends Composer<_$AppDatabase, $TasksTable> {
     column: $table.completed,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnWithTypeConverterFilters<Priority, Priority, String> get priority =>
+      $composableBuilder(
+        column: $table.priority,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
 
   ColumnFilters<String> get parentId => $composableBuilder(
     column: $table.parentId,
@@ -644,6 +705,11 @@ class $$TasksTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get priority => $composableBuilder(
+    column: $table.priority,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get parentId => $composableBuilder(
     column: $table.parentId,
     builder: (column) => ColumnOrderings(column),
@@ -685,6 +751,9 @@ class $$TasksTableAnnotationComposer
 
   GeneratedColumn<bool> get completed =>
       $composableBuilder(column: $table.completed, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<Priority, String> get priority =>
+      $composableBuilder(column: $table.priority, builder: (column) => column);
 
   GeneratedColumn<String> get parentId =>
       $composableBuilder(column: $table.parentId, builder: (column) => column);
@@ -731,6 +800,7 @@ class $$TasksTableTableManager
                 Value<String> title = const Value.absent(),
                 Value<String?> description = const Value.absent(),
                 Value<bool> completed = const Value.absent(),
+                Value<Priority> priority = const Value.absent(),
                 Value<String?> parentId = const Value.absent(),
                 Value<DateTime> createdOn = const Value.absent(),
                 Value<DateTime?> completedOn = const Value.absent(),
@@ -740,6 +810,7 @@ class $$TasksTableTableManager
                 title: title,
                 description: description,
                 completed: completed,
+                priority: priority,
                 parentId: parentId,
                 createdOn: createdOn,
                 completedOn: completedOn,
@@ -751,6 +822,7 @@ class $$TasksTableTableManager
                 required String title,
                 Value<String?> description = const Value.absent(),
                 required bool completed,
+                Value<Priority> priority = const Value.absent(),
                 Value<String?> parentId = const Value.absent(),
                 required DateTime createdOn,
                 Value<DateTime?> completedOn = const Value.absent(),
@@ -760,6 +832,7 @@ class $$TasksTableTableManager
                 title: title,
                 description: description,
                 completed: completed,
+                priority: priority,
                 parentId: parentId,
                 createdOn: createdOn,
                 completedOn: completedOn,
