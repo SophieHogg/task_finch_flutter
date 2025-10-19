@@ -6,10 +6,10 @@ import 'package:task_finch/task_provider.dart';
 import '../data/database.dart';
 
 class AddTaskDialog extends StatefulWidget {
-  const AddTaskDialog({super.key, required this.onAdd});
+  const AddTaskDialog({super.key, required this.onAdd, this.defaultParent});
 
   final void Function(TaskAddRequest taskAddRequest) onAdd;
-
+  final Task? defaultParent;
   @override
   State<AddTaskDialog> createState() => _AddTaskDialogState();
 }
@@ -21,7 +21,13 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
   final descriptionController = TextEditingController();
 
   Priority priority = Priority.medium;
-  Task? parent = null;
+
+  Task? parent;
+  @override
+  void initState() {
+    super.initState();
+    parent = widget.defaultParent;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +66,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
               maxLines: 5,
             ),
             PrioritySelector(priority: priority, onChangePriority: (newPriority) => priority = newPriority),
-            ParentSelector(onChangeParent: (newParent) => parent = newParent,),
+            ParentSelector(onChangeParent: (newParent) => parent = newParent, initialParent: parent),
             Spacer(),
             ElevatedButton(
 

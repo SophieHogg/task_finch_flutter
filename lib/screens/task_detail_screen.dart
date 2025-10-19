@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:task_finch/components/base_nav.dart';
 import 'package:task_finch/components/no_attribute_text.dart';
+import 'package:task_finch/components/no_subtask_list.dart';
 import 'package:task_finch/components/parent_selector.dart';
 import 'package:task_finch/components/priority_pill.dart';
 import 'package:task_finch/components/priority_selector.dart';
@@ -39,34 +41,44 @@ class TaskDetailScreen extends HookConsumerWidget {
     }
   }
 
+  void openAddTaskDialog (Task parent, BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog.fullscreen(
+          child: AddTaskDialog(
+            defaultParent: parent,
+            onAdd: (taskAddRequest) {
+              ref.read(taskListProvider.notifier).addTask(taskAddRequest);
+              Navigator.pop(context);
+            },
+          ),
+        );
+      },
+    );
+  }
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+
+
     final isEditing = useState<bool>(false);
     final priority = useState<Priority>(task.priority);
 
     final titleController = useTextEditingController(text: task.title);
+    final editedText = useListenable(titleController);
     final description = task.description?.trim() ?? '';
     final descriptionController = useTextEditingController(text: description);
 
     final subtaskList = ref.watch(subtasksForTaskId(task.id));
-    final subtaskListValue = subtaskList.value;
     final parent = _parent(task.parentId, ref);
     final parentValue = parent?.value;
-
+    final titleHasText = editedText.text.isNotEmpty;
     return Scaffold(
       appBar: AppBar(
         title:
             isEditing.value == true
-                ? TextFormField(
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (String? value) {
-                    return ((value == null || value.trim() == '')
-                        ? 'Title is required'
-                        : null);
-                  },
-                  controller: titleController,
-                )
-                : Text(titleController.text),
+                ? Text(titleController.text)
+                : Text(editedText.text),
       ),
       body: SingleChildScrollView(
         child: SafeArea(
@@ -75,6 +87,26 @@ class TaskDetailScreen extends HookConsumerWidget {
             spacing: 16.0,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              if (isEditing.value)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 4.0,
+                  children: [
+                    Text(
+                      'Title:',
+                      style: TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                    TextFormField(
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (String? value) {
+                        return ((value == null || value.trim() == '')
+                            ? 'Title is required'
+                            : null);
+                      },
+                      controller: titleController,
+                    ),
+                  ],
+                ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: 4.0,
@@ -132,34 +164,66 @@ class TaskDetailScreen extends HookConsumerWidget {
                         : TaskInkwell(task: parentValue),
                   ],
                 ),
-              if (subtaskList.value case final listValue?)
-                SubtaskList(taskList: listValue)
-              else
-                Row(),
+              Column(
+                spacing: 4,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+                    children: [
+                      Text(
+                        'Subtasks:',
+                        style: TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                      IconButton(onPressed: () => openAddTaskDialog(task, context, ref), icon: Icon(Icons.add))
+                    ],
+                  ),
+                  Divider(),
+                  if (subtaskList.value case final listValue?)
+                    listValue.isNotEmpty
+                        ? SubtaskList(taskList: listValue)
+                        : NoSubtaskList(
+                      onAddSubtask: () => openAddTaskDialog(task, context, ref),
+                    )
+                  else
+                    Text('loading...'),
+                ],
+              ),
             ],
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (isEditing.value == true) {
-            ref
-                .read(taskListProvider.notifier)
-                .editTaskById(
-                  task.id,
-                  TaskAddRequest(
-                    title: titleController.text,
-                    description: descriptionController.text,
-                    priority: priority.value,
-                    parentId: parentValue?.id,
-                  ),
-                );
-            isEditing.value = false;
-          } else {
-            isEditing.value = true;
-          }
-        },
-        child: Icon(isEditing.value == true ? Icons.check : Icons.edit),
+      bottomNavigationBar: BaseNav(),
+      floatingActionButton: Tooltip(
+        message: titleHasText ? 'Save changes' : 'Title must be provided',
+        child: Opacity(
+          opacity: titleHasText ? 1 : 0.6,
+          child: FloatingActionButton(
+            onPressed:
+                titleHasText
+                    ? () {
+                      if (isEditing.value == true) {
+                        ref
+                            .read(taskListProvider.notifier)
+                            .editTaskById(
+                              task.id,
+                              TaskAddRequest(
+                                title: titleController.text,
+                                description: descriptionController.text,
+                                priority: priority.value,
+                                parentId: parentValue?.id,
+                              ),
+                            );
+                        isEditing.value = false;
+                      } else {
+                        isEditing.value = true;
+                      }
+                    }
+                    : null,
+            child: Icon(isEditing.value == true ? Icons.check : Icons.edit),
+          ),
+        ),
       ),
     );
   }
