@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:todos/helpers/text_helpers.dart';
+import 'package:task_finch/helpers/text_helpers.dart';
 
 import '../data/database.dart';
 

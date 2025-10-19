@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:todos/components/priority_pill.dart';
+import 'package:task_finch/components/priority_pill.dart';
 
 import '../main.dart';
 

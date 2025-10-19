@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hooks_riverpod/legacy.dart';
-import 'package:todos/data/database.dart';
-import 'package:todos/dialogs/add_task_dialog.dart';
+import 'package:task_finch/data/database.dart';
+import 'package:task_finch/dialogs/add_task_dialog.dart';
 
 import 'components/navbar.dart';
 import 'components/task_item.dart';
@@ -29,7 +29,7 @@ enum TaskListFilter { all, active, completed }
 final taskListFilter = StateProvider((_) => TaskListFilter.all);
 
 
-final uncompletedTodosCount = Provider<int>((ref) {
+final uncompletedTasksCount = Provider<int>((ref) {
   return ref
           .watch(taskListProvider)
           .value
@@ -153,13 +153,13 @@ class Toolbar extends HookConsumerWidget {
         children: [
           Expanded(
             child: Text(
-              '${ref.watch(uncompletedTodosCount)} items left',
+              '${ref.watch(uncompletedTasksCount)} items left',
               overflow: TextOverflow.ellipsis,
             ),
           ),
           Tooltip(
             key: allFilterKey,
-            message: 'All todos',
+            message: 'All tasks',
             child: TextButton(
               onPressed:
                   () =>
@@ -176,7 +176,7 @@ class Toolbar extends HookConsumerWidget {
           ),
           Tooltip(
             key: activeFilterKey,
-            message: 'Only uncompleted todos',
+            message: 'Only uncompleted tasks',
             child: TextButton(
               onPressed:
                   () =>
@@ -193,7 +193,7 @@ class Toolbar extends HookConsumerWidget {
           ),
           Tooltip(
             key: completedFilterKey,
-            message: 'Only completed todos',
+            message: 'Only completed tasks',
             child: TextButton(
               onPressed:
                   () =>
