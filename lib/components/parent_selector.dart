@@ -31,13 +31,11 @@ class ParentSelector extends HookConsumerWidget {
     Priority.medium: Colors.orange,
     Priority.low: Colors.green,
   };
-  final TextEditingController taskController = TextEditingController();
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedTask = useState<Task?>(initialParent);
     final taskList = ref.watch(possibleParentProvider);
-
+    final taskController = useTextEditingController();
     return DropdownMenu<Task>(
       initialSelection: selectedTask.value,
       controller: taskController,

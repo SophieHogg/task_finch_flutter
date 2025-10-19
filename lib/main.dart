@@ -71,7 +71,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(home: TFTheme(child: Home()));
+    return TFTheme(child: Builder(
+      builder: (context) {
+        return MaterialApp(theme: Theme.of(context), home: Home());
+      }
+    ));
   }
 }
 

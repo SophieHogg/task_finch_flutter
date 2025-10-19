@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:task_finch/components/priority_pill.dart';
+import 'package:task_finch/screens/task_detail_screen.dart';
 
 import '../main.dart';
 
@@ -18,7 +19,9 @@ class TaskItem extends HookConsumerWidget {
       elevation: 6,
       child: ListTile(
         visualDensity: VisualDensity.compact,
-        onTap: () {},
+        onTap: () {
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => TaskDetailScreen(task: task)));
+        },
         leading: Checkbox(
           value: isCompleted,
           onChanged: (value) async {
