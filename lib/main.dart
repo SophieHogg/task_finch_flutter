@@ -9,7 +9,7 @@ import 'package:task_finch/dialogs/add_task_dialog.dart';
 import 'components/navbar.dart';
 import 'components/task_item.dart';
 import 'theming/theme.dart';
-import 'todoProvider.dart';
+import 'task_provider.dart';
 
 final activeFilterKey = UniqueKey();
 final completedFilterKey = UniqueKey();

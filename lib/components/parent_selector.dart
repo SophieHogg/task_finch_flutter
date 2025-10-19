@@ -22,10 +22,11 @@ final possibleParentProvider = Provider<List<Task>>((ref) {
 typedef TaskEntry = DropdownMenuEntry<Task>;
 
 class ParentSelector extends HookConsumerWidget {
-  ParentSelector({super.key, required this.onChangeParent, this.initialParent});
+  ParentSelector({super.key, required this.onChangeParent, this.initialParent, this.taskId});
 
   final void Function (Task? parent) onChangeParent;
   final Task? initialParent;
+  final String? taskId;
   final Map<Priority, Color> priorityColours = {
     Priority.high: Colors.red,
     Priority.medium: Colors.orange,
@@ -35,6 +36,7 @@ class ParentSelector extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedTask = useState<Task?>(initialParent);
     final taskList = ref.watch(possibleParentProvider);
+    final filteredTaskList = taskList.whereNot((task) => task.id == taskId);
     final taskController = useTextEditingController();
     return DropdownMenu<Task>(
       initialSelection: selectedTask.value,
@@ -53,7 +55,7 @@ class ParentSelector extends HookConsumerWidget {
       enableFilter: true,
       inputDecorationTheme: InputDecorationTheme.of(context),
       dropdownMenuEntries: [
-        for (final task in taskList)
+        for (final task in filteredTaskList)
           TaskEntry(
             value: task,
             label: task.title,

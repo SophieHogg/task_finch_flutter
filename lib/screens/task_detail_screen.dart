@@ -8,6 +8,7 @@ import 'package:task_finch/components/priority_selector.dart';
 import '../components/task_item.dart';
 import '../data/database.dart';
 import '../dialogs/add_task_dialog.dart';
+import '../task_get_provider.dart';
 
 final Map<Priority, Color> priorityColours = {
   Priority.high: Colors.red,
@@ -20,16 +21,30 @@ class TaskDetailScreen extends HookConsumerWidget {
 
   final Task task;
 
+  ValueNotifier<Task?>? _parent(String? parentId, WidgetRef ref) {
+    if (parentId == null)
+      return useState(null);
+    else {
+      final parentTaskData = ref.watch(taskGetProvider(parentId));
+      if (parentTaskData is AsyncData)
+        return useState(parentTaskData.value);
+      else
+        // Return null as we don't want to set the initial value until the parent task data is loaded.
+        return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isEditing = useState<bool>(false);
     final priority = useState<Priority>(task.priority);
-    final parent = useState<Task?>(null);
-    final parentValue = parent.value;
 
     final titleController = useTextEditingController(text: task.title);
     final description = task.description?.trim() ?? '';
     final descriptionController = useTextEditingController(text: description);
+
+    final parent = _parent(task.parentId, ref);
+    final parentValue = parent?.value;
 
     return Scaffold(
       appBar: AppBar(
@@ -53,7 +68,11 @@ class TaskDetailScreen extends HookConsumerWidget {
                   style: TextStyle(fontWeight: FontWeight.w700),
                 ),
                 isEditing.value == true
-                    ? TextField(minLines: 3, maxLines: 10)
+                    ? TextField(
+                      minLines: 3,
+                      maxLines: 10,
+                      controller: descriptionController,
+                    )
                     : Text(
                       description.isNotEmpty
                           ? description
@@ -79,38 +98,41 @@ class TaskDetailScreen extends HookConsumerWidget {
                     : PriorityPill(priority: priority.value),
               ],
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 4.0,
-              children: [
-                if (!isEditing.value)
-                  Text(
-                    'Parent Task:',
-                    style: TextStyle(fontWeight: FontWeight.w700),
-                  ),
-                isEditing.value == true
-                    ? ParentSelector(
-                      onChangeParent: (newParent) => parent.value = newParent,
-                    )
-                    : parentValue == null
-                    ? Text('No parent provided')
-                    : Row(
-                      children: [
-                        Container(
-                          width: 8,
-                          height: 8,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: priorityColours[parentValue.priority],
-                              shape: BoxShape.circle,
+            if (parent != null)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 4.0,
+                children: [
+                  if (!isEditing.value)
+                    Text(
+                      'Parent Task:',
+                      style: TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                  isEditing.value == true
+                      ? ParentSelector(
+                        taskId: task.id,
+                        initialParent: parent.value,
+                        onChangeParent: (newParent) => parent.value = newParent,
+                      )
+                      : parentValue == null
+                      ? Text('No parent provided')
+                      : Row(
+                        children: [
+                          Container(
+                            width: 8,
+                            height: 8,
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                color: priorityColours[parentValue.priority],
+                                shape: BoxShape.circle,
+                              ),
                             ),
                           ),
-                        ),
-                        Text(parentValue.title),
-                      ],
-                    ),
-              ],
-            ),
+                          Text(parentValue.title),
+                        ],
+                      ),
+                ],
+              ),
           ],
         ),
       ),

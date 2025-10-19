@@ -42,8 +42,6 @@ class TaskList extends AsyncNotifier<List<Task>> {
     ref.invalidateSelf();
   }
 
-  void toggle(String id) {}
-
   void markComplete(String id) async {
     await (database.update(database.tasks)
       ..where((task) => task.id.isValue(id))).write(
@@ -71,6 +69,7 @@ class TaskList extends AsyncNotifier<List<Task>> {
     //       todo,
     // ];
   }
+
 
   void delete(String id) async {
     await (database.delete(database.tasks)

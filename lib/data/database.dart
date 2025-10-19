@@ -17,7 +17,7 @@ class Tasks extends Table {
   TextColumn get description => text().nullable()();
   BoolColumn get completed => boolean()();
   TextColumn get priority => textEnum<Priority>().withDefault(Constant('medium'))();
-  TextColumn get parentId => text().nullable()();
+  TextColumn get parentId => text().references(Tasks, #id).nullable()();
   DateTimeColumn get createdOn => dateTime()();
   DateTimeColumn get completedOn => dateTime().nullable()();
 }

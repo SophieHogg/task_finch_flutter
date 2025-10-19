@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:task_finch/components/parent_selector.dart';
 import 'package:task_finch/components/priority_selector.dart';
-import 'package:task_finch/todoProvider.dart';
+import 'package:task_finch/task_provider.dart';
 
 import '../data/database.dart';
 
