@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:task_finch/components/no_attribute_text.dart';
 import 'package:task_finch/components/parent_selector.dart';
 import 'package:task_finch/components/priority_pill.dart';
 import 'package:task_finch/components/priority_selector.dart';
+import 'package:task_finch/components/task_inkwell.dart';
 import 'package:task_finch/components/task_list.dart';
 import 'package:task_finch/main.dart';
 import 'package:task_finch/task_provider.dart';
@@ -55,7 +57,15 @@ class TaskDetailScreen extends HookConsumerWidget {
       appBar: AppBar(
         title:
             isEditing.value == true
-                ? TextField(controller: titleController)
+                ? TextFormField(
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (String? value) {
+                    return ((value == null || value.trim() == '')
+                        ? 'Title is required'
+                        : null);
+                  },
+                  controller: titleController,
+                )
                 : Text(titleController.text),
       ),
       body: SingleChildScrollView(
@@ -79,11 +89,9 @@ class TaskDetailScreen extends HookConsumerWidget {
                         maxLines: 10,
                         controller: descriptionController,
                       )
-                      : Text(
-                        descriptionController.text.isNotEmpty
-                            ? descriptionController.text
-                            : 'No description provided',
-                      ),
+                      : descriptionController.text.isNotEmpty
+                      ? Text(descriptionController.text)
+                      : NoAttributeText(text: 'No description provided'),
                 ],
               ),
               Column(
@@ -121,36 +129,7 @@ class TaskDetailScreen extends HookConsumerWidget {
                           onChangeParent:
                               (newParent) => parent.value = newParent,
                         )
-                        : parentValue == null
-                        ? Text('No parent provided')
-                        : InkWell(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder:
-                                    (context) =>
-                                        TaskDetailScreen(task: parentValue),
-                              ),
-                            );
-                          },
-                          child: Row(
-                            spacing: 8,
-                            children: [
-                              Container(
-                                width: 8,
-                                height: 8,
-                                child: DecoratedBox(
-                                  decoration: BoxDecoration(
-                                    color:
-                                        priorityColours[parentValue.priority],
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                              ),
-                              Text(parentValue.title),
-                            ],
-                          ),
-                        ),
+                        : TaskInkwell(task: parentValue),
                   ],
                 ),
               if (subtaskList.value case final listValue?)
