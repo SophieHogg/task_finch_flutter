@@ -101,7 +101,7 @@ class Home extends HookConsumerWidget {
                 },
                 child: ProviderScope(
                   overrides: [currentTask.overrideWithValue(tasks[i])],
-                  child: const TodoItem(),
+                  child: const TaskItem(),
                 ),
               ),
             ],

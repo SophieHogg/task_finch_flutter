@@ -4,14 +4,14 @@ import 'package:task_finch/components/priority_pill.dart';
 
 import '../main.dart';
 
-class TodoItem extends HookConsumerWidget {
-  const TodoItem({super.key});
+class TaskItem extends HookConsumerWidget {
+  const TaskItem({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final todo = ref.watch(currentTask);
+    final task = ref.watch(currentTask);
 
-    bool isCompleted = todo.completed;
+    bool isCompleted = task.completed;
 
     return Material(
       color: Colors.white,
@@ -25,22 +25,22 @@ class TodoItem extends HookConsumerWidget {
             if (value == null) return;
             isCompleted = value;
             if (value)
-              ref.read(taskListProvider.notifier).markComplete(todo.id);
+              ref.read(taskListProvider.notifier).markComplete(task.id);
             else
-              ref.read(taskListProvider.notifier).markIncomplete(todo.id);
+              ref.read(taskListProvider.notifier).markIncomplete(task.id);
           },
         ),
         title: Opacity(
-          opacity: todo.completed ? 0.6 : 1,
+          opacity: task.completed ? 0.6 : 1,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(todo.title),
+              Text(task.title),
               Align(
                 alignment: Alignment.centerLeft,
-                child: PriorityPill(priority: todo.priority),
+                child: PriorityPill(priority: task.priority),
               ),
-             Text(todo.parentId ?? '')
+             Text(task.parentId ?? '')
             ],
           ),
         ),

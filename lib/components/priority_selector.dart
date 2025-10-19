@@ -19,8 +19,6 @@ class PrioritySelector extends HookWidget {
     Priority.medium: Colors.orange,
     Priority.low: Colors.green,
   };
-
-
   @override
   Widget build(BuildContext context) {
     final _lastSelection = useState<Priority>(priority);
