@@ -5,16 +5,20 @@ import 'package:todos/helpers/text_helpers.dart';
 import '../data/database.dart';
 
 class PrioritySelector extends StatefulWidget {
-  const PrioritySelector({super.key, required this.priority, required this.onChangePriority});
+  const PrioritySelector({
+    super.key,
+    required this.priority,
+    required this.onChangePriority,
+  });
 
   final Priority priority;
-  final void Function (Priority priority) onChangePriority;
+  final void Function(Priority priority) onChangePriority;
 
   @override
-  State<PrioritySelector> createState() => _MyCascadingMenuState();
+  State<PrioritySelector> createState() => _PrioritySelectorState();
 }
 
-class _MyCascadingMenuState extends State<PrioritySelector> {
+class _PrioritySelectorState extends State<PrioritySelector> {
   late Priority _lastSelection;
 
   @override
@@ -53,8 +57,8 @@ class _MyCascadingMenuState extends State<PrioritySelector> {
                       ),
 
                       Text(priorityColour.key.name.toSentenceCase()),
-                      if(priorityColour.key == _lastSelection)
-                        Icon(Icons.check)
+                      if (priorityColour.key == _lastSelection)
+                        Icon(Icons.check),
                     ],
                   ),
                 ),
@@ -66,7 +70,7 @@ class _MyCascadingMenuState extends State<PrioritySelector> {
             MenuController controller,
             Widget? child,
           ) {
-            return ElevatedButton(
+            return OutlinedButton(
               onPressed: () {
                 if (controller.isOpen) {
                   controller.close();

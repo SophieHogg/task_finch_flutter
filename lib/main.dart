@@ -1,14 +1,14 @@
-import 'package:drift/drift.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hooks_riverpod/legacy.dart';
-import 'package:todos/components/add_task_dialog.dart';
 import 'package:todos/data/database.dart';
-import 'package:collection/collection.dart';
+import 'package:todos/dialogs/add_task_dialog.dart';
 
 import 'components/navbar.dart';
 import 'components/task_item.dart';
+import 'theming/theme.dart';
 import 'todoProvider.dart';
 
 /// Some keys used for testing
@@ -88,7 +88,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(home: Home());
+    return const MaterialApp(home: TFTheme(child: Home()));
   }
 }
 

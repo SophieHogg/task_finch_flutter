@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:todos/components/priority_pill.dart';
-import 'package:todos/helpers/text_helpers.dart';
 
-import '../data/database.dart';
 import '../main.dart';
 
 class TodoItem extends HookConsumerWidget {
@@ -12,7 +9,7 @@ class TodoItem extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final todo = ref.watch(currentTodo, );
+    final todo = ref.watch(currentTodo);
 
     bool isCompleted = todo.completed;
 
@@ -21,9 +18,7 @@ class TodoItem extends HookConsumerWidget {
       elevation: 6,
       child: ListTile(
         visualDensity: VisualDensity.compact,
-        onTap: () {
-
-        },
+        onTap: () {},
         leading: Checkbox(
           value: isCompleted,
           onChanged: (value) async {
@@ -35,20 +30,20 @@ class TodoItem extends HookConsumerWidget {
               ref.read(todoListProvider.notifier).markIncomplete(todo.id);
           },
         ),
-        title:
-            Opacity(
-              opacity: todo.completed ? 0.6 : 1,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(todo.title),
+        title: Opacity(
+          opacity: todo.completed ? 0.6 : 1,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(todo.title),
               Align(
                 alignment: Alignment.centerLeft,
                 child: PriorityPill(priority: todo.priority),
               ),
-                          ],
-              ),
-            ),
+             Text(todo.parentId ?? '')
+            ],
+          ),
+        ),
       ),
     );
   }

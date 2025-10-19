@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todos/components/parent_selector.dart';
 import 'package:todos/components/priority_selector.dart';
 import 'package:todos/todoProvider.dart';
 
@@ -20,22 +21,25 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
   final descriptionController = TextEditingController();
 
   Priority priority = Priority.medium;
+  Task? parent = null;
 
   @override
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
         child: Column(
-          spacing: 8.0,
+          spacing: 16.0,
           children: [
+            Text("New Task"),
             TextFormField(
               controller: titleController,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               decoration: const InputDecoration(
                 label: const Row(
                   spacing: 4,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text('Title'),
                     const Text('*', style: TextStyle(color: Colors.red)),
@@ -56,6 +60,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
               maxLines: 5,
             ),
             PrioritySelector(priority: priority, onChangePriority: (newPriority) => priority = newPriority),
+            ParentSelector(onChangeParent: (newParent) => parent = newParent,),
             Spacer(),
             ElevatedButton(
 
@@ -67,7 +72,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                       title: titleController.text.trim(),
                       description: descriptionController.text,
                       priority: priority,
-                      parentId: '1234',
+                      parentId: parent?.id,
                     ),
                   );
                 }
