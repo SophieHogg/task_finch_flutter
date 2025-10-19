@@ -11,62 +11,45 @@ import 'components/task_item.dart';
 import 'theming/theme.dart';
 import 'todoProvider.dart';
 
-/// Some keys used for testing
-final addTodoKey = UniqueKey();
 final activeFilterKey = UniqueKey();
 final completedFilterKey = UniqueKey();
 final allFilterKey = UniqueKey();
 
-/// Creates a [TodoList] and initialize it with pre-defined values.
+/// Creates a [TaskList] and initialize it with pre-defined values.
 ///
 /// We are using [NotifierProvider] here as a `List<Todo>` is a complex
 /// object, with advanced business logic like how to edit a todo.
-final todoListProvider = AsyncNotifierProvider<TodoList, List<Task>>(
-  TodoList.new,
+final taskListProvider = AsyncNotifierProvider<TaskList, List<Task>>(
+  TaskList.new,
 );
 
 /// The different ways to filter the list of todos
-enum TodoListFilter { all, active, completed }
+enum TaskListFilter { all, active, completed }
 
-/// The currently active filter.
-///
-/// We use [StateProvider] here as there is no fancy logic behind manipulating
-/// the value since it's just enum.
-final todoListFilter = StateProvider((_) => TodoListFilter.all);
+final taskListFilter = StateProvider((_) => TaskListFilter.all);
 
-/// The number of uncompleted todos
-///
-/// By using [Provider], this value is cached, making it performant.\
-/// Even multiple widgets try to read the number of uncompleted todos,
-/// the value will be computed only once (until the todo-list changes).
-///
-/// This will also optimize unneeded rebuilds if the todo-list changes, but the
-/// number of uncompleted todos doesn't (such as when editing a todo).
+
 final uncompletedTodosCount = Provider<int>((ref) {
   return ref
-          .watch(todoListProvider)
+          .watch(taskListProvider)
           .value
           ?.where((todo) => !todo.completed)
           .length ??
       0;
 });
 
-/// The list of todos after applying of [todoListFilter].
-///
-/// This too uses [Provider], to avoid recomputing the filtered list unless either
-/// the filter of or the todo-list updates.
-final filteredTodos = Provider<List<Task>>((ref) {
-  final filter = ref.watch(todoListFilter);
-  final todos = ref.watch(todoListProvider);
+final filteredTasks = Provider<List<Task>>((ref) {
+  final filter = ref.watch(taskListFilter);
+  final tasks = ref.watch(taskListProvider);
   switch (filter) {
-    case TodoListFilter.completed:
-      return todos.value?.where((todo) => todo.completed).toList() ?? [];
-    case TodoListFilter.active:
-      return todos.value?.where((todo) => !todo.completed).toList() ?? [];
-    case TodoListFilter.all:
+    case TaskListFilter.completed:
+      return tasks.value?.where((todo) => todo.completed).toList() ?? [];
+    case TaskListFilter.active:
+      return tasks.value?.where((todo) => !todo.completed).toList() ?? [];
+    case TaskListFilter.all:
       // ensure the incomplete tasks are at the top
-  final incompleteTasks = todos.value?.where((task) => !task.completed).sortedBy((task) => task.priority.index);
-  final completeTasks = todos.value?.where((task) => task.completed).sortedBy((task) => task.priority.index);
+  final incompleteTasks = tasks.value?.where((task) => !task.completed).sortedBy((task) => task.priority.index);
+  final completeTasks = tasks.value?.where((task) => task.completed).sortedBy((task) => task.priority.index);
       return [...?incompleteTasks, ...?completeTasks];
   }
 });
@@ -98,7 +81,7 @@ class Home extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final todos = ref.watch(filteredTodos);
+    final tasks = ref.watch(filteredTasks);
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -108,16 +91,16 @@ class Home extends HookConsumerWidget {
           children: [
             const SizedBox(height: 42),
             const Toolbar(),
-            if (todos.isNotEmpty) const Divider(height: 0),
-            for (var i = 0; i < todos.length; i++) ...[
+            if (tasks.isNotEmpty) const Divider(height: 0),
+            for (var i = 0; i < tasks.length; i++) ...[
               if (i > 0) const Divider(height: 0),
               Dismissible(
-                key: ValueKey(todos[i].id),
+                key: ValueKey(tasks[i].id),
                 onDismissed: (_) async {
-                  ref.read(todoListProvider.notifier).delete(todos[i].id);
+                  ref.read(taskListProvider.notifier).delete(tasks[i].id);
                 },
                 child: ProviderScope(
-                  overrides: [currentTodo.overrideWithValue(todos[i])],
+                  overrides: [currentTask.overrideWithValue(tasks[i])],
                   child: const TodoItem(),
                 ),
               ),
@@ -132,7 +115,7 @@ class Home extends HookConsumerWidget {
                 return Dialog.fullscreen(
                   child: AddTaskDialog(
                     onAdd: (taskAddRequest) {
-                      ref.read(todoListProvider.notifier).add(taskAddRequest);
+                      ref.read(taskListProvider.notifier).add(taskAddRequest);
                       Navigator.pop(context);
                     },
                   ),
@@ -148,14 +131,7 @@ class Home extends HookConsumerWidget {
   }
 }
 
-/// A provider which exposes the [Task] displayed by a [TodoItem].
-///
-/// By retrieving the [Task] through a provider instead of through its
-/// constructor, this allows [TodoItem] to be instantiated using the `const` keyword.
-///
-/// This ensures that when we add/remove/edit todos, only what the
-/// impacted widgets rebuilds, instead of the entire list of items.
-final currentTodo = Provider<Task>(
+final currentTask = Provider<Task>(
   dependencies: const [],
   (ref) => throw UnimplementedError(),
 );
@@ -165,9 +141,9 @@ class Toolbar extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final filter = ref.watch(todoListFilter);
+    final filter = ref.watch(taskListFilter);
 
-    Color? textColorFor(TodoListFilter value) {
+    Color? textColorFor(TaskListFilter value) {
       return filter == value ? Colors.blue : Colors.black;
     }
 
@@ -187,12 +163,12 @@ class Toolbar extends HookConsumerWidget {
             child: TextButton(
               onPressed:
                   () =>
-                      ref.read(todoListFilter.notifier).state =
-                          TodoListFilter.all,
+                      ref.read(taskListFilter.notifier).state =
+                          TaskListFilter.all,
               style: ButtonStyle(
                 visualDensity: VisualDensity.compact,
                 foregroundColor: WidgetStatePropertyAll(
-                  textColorFor(TodoListFilter.all),
+                  textColorFor(TaskListFilter.all),
                 ),
               ),
               child: const Text('All'),
@@ -204,12 +180,12 @@ class Toolbar extends HookConsumerWidget {
             child: TextButton(
               onPressed:
                   () =>
-                      ref.read(todoListFilter.notifier).state =
-                          TodoListFilter.active,
+                      ref.read(taskListFilter.notifier).state =
+                          TaskListFilter.active,
               style: ButtonStyle(
                 visualDensity: VisualDensity.compact,
                 foregroundColor: WidgetStatePropertyAll(
-                  textColorFor(TodoListFilter.active),
+                  textColorFor(TaskListFilter.active),
                 ),
               ),
               child: const Text('Active'),
@@ -221,12 +197,12 @@ class Toolbar extends HookConsumerWidget {
             child: TextButton(
               onPressed:
                   () =>
-                      ref.read(todoListFilter.notifier).state =
-                          TodoListFilter.completed,
+                      ref.read(taskListFilter.notifier).state =
+                          TaskListFilter.completed,
               style: ButtonStyle(
                 visualDensity: VisualDensity.compact,
                 foregroundColor: WidgetStatePropertyAll(
-                  textColorFor(TodoListFilter.completed),
+                  textColorFor(TaskListFilter.completed),
                 ),
               ),
               child: const Text('Completed'),
@@ -236,19 +212,4 @@ class Toolbar extends HookConsumerWidget {
       ),
     );
   }
-}
-
-bool useIsFocused(FocusNode node) {
-  final isFocused = useState(node.hasFocus);
-
-  useEffect(() {
-    void listener() {
-      isFocused.value = node.hasFocus;
-    }
-
-    node.addListener(listener);
-    return () => node.removeListener(listener);
-  }, [node]);
-
-  return isFocused.value;
 }

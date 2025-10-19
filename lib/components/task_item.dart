@@ -9,7 +9,7 @@ class TodoItem extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final todo = ref.watch(currentTodo);
+    final todo = ref.watch(currentTask);
 
     bool isCompleted = todo.completed;
 
@@ -25,9 +25,9 @@ class TodoItem extends HookConsumerWidget {
             if (value == null) return;
             isCompleted = value;
             if (value)
-              ref.read(todoListProvider.notifier).markComplete(todo.id);
+              ref.read(taskListProvider.notifier).markComplete(todo.id);
             else
-              ref.read(todoListProvider.notifier).markIncomplete(todo.id);
+              ref.read(taskListProvider.notifier).markIncomplete(todo.id);
           },
         ),
         title: Opacity(

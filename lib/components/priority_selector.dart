@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:todos/helpers/text_helpers.dart';
 
 import '../data/database.dart';
+typedef PriorityEntry = DropdownMenuEntry<Priority>;
 
-class PrioritySelector extends StatefulWidget {
-  const PrioritySelector({
+class PrioritySelector extends HookWidget {
+  PrioritySelector({
     super.key,
     required this.priority,
     required this.onChangePriority,
@@ -13,96 +15,44 @@ class PrioritySelector extends StatefulWidget {
 
   final Priority priority;
   final void Function(Priority priority) onChangePriority;
-
-  @override
-  State<PrioritySelector> createState() => _PrioritySelectorState();
-}
-
-class _PrioritySelectorState extends State<PrioritySelector> {
-  late Priority _lastSelection;
-
-  @override
-  void initState() {
-    super.initState();
-    _lastSelection = widget.priority;
-  }
-
   final Map<Priority, Color> priorityColours = {
     Priority.high: Colors.red,
     Priority.medium: Colors.orange,
     Priority.low: Colors.green,
   };
 
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        MenuAnchor(
-          menuChildren: <Widget>[
-            for (final priorityColour in priorityColours.entries)
-              MenuItemButton(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Row(
-                    spacing: 8,
-                    children: [
-                      Container(
-                        width: 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: priorityColour.value,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
+    final _lastSelection = useState<Priority>(priority);
 
-                      Text(priorityColour.key.name.toSentenceCase()),
-                      if (priorityColour.key == _lastSelection)
-                        Icon(Icons.check),
-                    ],
-                  ),
-                ),
-                onPressed: () => _activate(priorityColour.key),
+    return DropdownMenu<Priority>(
+      initialSelection: _lastSelection.value,
+      enableSearch: false,
+      requestFocusOnTap: false,
+      label: const Text('Priority'),
+      onSelected: (Priority? priority) {
+        _lastSelection.value = priority ?? Priority.medium;
+        onChangePriority(priority ?? Priority.medium);
+      },
+      expandedInsets: EdgeInsets.zero,
+      enableFilter: false,
+      inputDecorationTheme: InputDecorationTheme.of(context),
+      dropdownMenuEntries: [
+        for (final priority in priorityColours.entries)
+          PriorityEntry(
+            value: priority.key,
+            label: priority.key.name.toSentenceCase(),
+            leadingIcon: Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                color: priority.value,
+                shape: BoxShape.circle,
               ),
-          ],
-          builder: (
-            BuildContext context,
-            MenuController controller,
-            Widget? child,
-          ) {
-            return OutlinedButton(
-              onPressed: () {
-                if (controller.isOpen) {
-                  controller.close();
-                } else {
-                  controller.open();
-                }
-              },
-              child: Row(
-                spacing: 8,
-                children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: priorityColours[_lastSelection],
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  Text(_lastSelection.name.toSentenceCase()),
-                ],
-              ),
-            );
-          },
-        ),
+            ),
+          ),
       ],
     );
-  }
-
-  void _activate(Priority selection) {
-    setState(() {
-      _lastSelection = selection;
-      widget.onChangePriority(selection);
-    });
   }
 }

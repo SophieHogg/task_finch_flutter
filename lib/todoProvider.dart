@@ -22,7 +22,7 @@ class TaskAddRequest {
 }
 
 /// An object that controls a list of [Task].
-class TodoList extends AsyncNotifier<List<Task>> {
+class TaskList extends AsyncNotifier<List<Task>> {
   @override
   Future<List<Task>> build() async {
     return await database.select(database.tasks).get();
