@@ -4,6 +4,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:task_finch/components/parent_selector.dart';
 import 'package:task_finch/components/priority_pill.dart';
 import 'package:task_finch/components/priority_selector.dart';
+import 'package:task_finch/components/task_list.dart';
+import 'package:task_finch/main.dart';
+import 'package:task_finch/task_provider.dart';
 
 import '../components/task_item.dart';
 import '../data/database.dart';
@@ -25,7 +28,7 @@ class TaskDetailScreen extends HookConsumerWidget {
     if (parentId == null)
       return useState(null);
     else {
-      final parentTaskData = ref.watch(taskGetProvider(parentId));
+      final parentTaskData = ref.watch(taskById(parentId));
       if (parentTaskData is AsyncData)
         return useState(parentTaskData.value);
       else
@@ -43,6 +46,8 @@ class TaskDetailScreen extends HookConsumerWidget {
     final description = task.description?.trim() ?? '';
     final descriptionController = useTextEditingController(text: description);
 
+    final subtaskList = ref.watch(subtasksForTaskId(task.id));
+    final subtaskListValue = subtaskList.value;
     final parent = _parent(task.parentId, ref);
     final parentValue = parent?.value;
 
@@ -51,94 +56,125 @@ class TaskDetailScreen extends HookConsumerWidget {
         title:
             isEditing.value == true
                 ? TextField(controller: titleController)
-                : Text(task.title),
+                : Text(titleController.text),
       ),
-      body: SafeArea(
-        minimum: EdgeInsets.all(16.0),
-        child: Column(
-          spacing: 16.0,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 4.0,
-              children: [
-                Text(
-                  'Description:',
-                  style: TextStyle(fontWeight: FontWeight.w700),
-                ),
-                isEditing.value == true
-                    ? TextField(
-                      minLines: 3,
-                      maxLines: 10,
-                      controller: descriptionController,
-                    )
-                    : Text(
-                      description.isNotEmpty
-                          ? description
-                          : 'No description provided',
-                    ),
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 4.0,
-              children: [
-                if (!isEditing.value)
+      body: SingleChildScrollView(
+        child: SafeArea(
+          minimum: EdgeInsets.all(16.0),
+          child: Column(
+            spacing: 16.0,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 4.0,
+                children: [
                   Text(
-                    'Priority:',
+                    'Description:',
                     style: TextStyle(fontWeight: FontWeight.w700),
                   ),
-                isEditing.value == true
-                    ? PrioritySelector(
-                      priority: priority.value,
-                      onChangePriority:
-                          (newPriority) => priority.value = newPriority,
-                    )
-                    : PriorityPill(priority: priority.value),
-              ],
-            ),
-            if (parent != null)
+                  isEditing.value == true
+                      ? TextField(
+                        minLines: 3,
+                        maxLines: 10,
+                        controller: descriptionController,
+                      )
+                      : Text(
+                        descriptionController.text.isNotEmpty
+                            ? descriptionController.text
+                            : 'No description provided',
+                      ),
+                ],
+              ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: 4.0,
                 children: [
                   if (!isEditing.value)
                     Text(
-                      'Parent Task:',
+                      'Priority:',
                       style: TextStyle(fontWeight: FontWeight.w700),
                     ),
                   isEditing.value == true
-                      ? ParentSelector(
-                        taskId: task.id,
-                        initialParent: parent.value,
-                        onChangeParent: (newParent) => parent.value = newParent,
+                      ? PrioritySelector(
+                        priority: priority.value,
+                        onChangePriority:
+                            (newPriority) => priority.value = newPriority,
                       )
-                      : parentValue == null
-                      ? Text('No parent provided')
-                      : Row(
-                        children: [
-                          Container(
-                            width: 8,
-                            height: 8,
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                color: priorityColours[parentValue.priority],
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                          ),
-                          Text(parentValue.title),
-                        ],
-                      ),
+                      : PriorityPill(priority: priority.value),
                 ],
               ),
-          ],
+              if (parent != null)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 4.0,
+                  children: [
+                    if (!isEditing.value)
+                      Text(
+                        'Parent Task:',
+                        style: TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                    isEditing.value == true
+                        ? ParentSelector(
+                          taskId: task.id,
+                          initialParent: parent.value,
+                          onChangeParent:
+                              (newParent) => parent.value = newParent,
+                        )
+                        : parentValue == null
+                        ? Text('No parent provided')
+                        : InkWell(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder:
+                                    (context) =>
+                                        TaskDetailScreen(task: parentValue),
+                              ),
+                            );
+                          },
+                          child: Row(
+                            spacing: 8,
+                            children: [
+                              Container(
+                                width: 8,
+                                height: 8,
+                                child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    color:
+                                        priorityColours[parentValue.priority],
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                              ),
+                              Text(parentValue.title),
+                            ],
+                          ),
+                        ),
+                  ],
+                ),
+              if (subtaskList.value case final listValue?)
+                SubtaskList(taskList: listValue)
+              else
+                Row(),
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           if (isEditing.value == true) {
+            ref
+                .read(taskListProvider.notifier)
+                .editTaskById(
+                  task.id,
+                  TaskAddRequest(
+                    title: titleController.text,
+                    description: descriptionController.text,
+                    priority: priority.value,
+                    parentId: parentValue?.id,
+                  ),
+                );
             isEditing.value = false;
           } else {
             isEditing.value = true;

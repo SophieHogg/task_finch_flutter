@@ -8,19 +8,23 @@ class TFTheme extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final existingTheme = ThemeData(
-      colorScheme: ColorScheme.fromSeed(seedColor: Color(0x020154)),
+      colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF020154)),
     );
     return Theme(
+
       data: existingTheme.copyWith(
-        textTheme: existingTheme.textTheme.copyWith(
-          bodyMedium: TextStyle(color: Colors.red),
-        ),
+        colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF020154)),
         outlinedButtonTheme: OutlinedButtonThemeData(
           style: OutlinedButton.styleFrom(
             backgroundColor: Colors.white,
             padding: EdgeInsets.all(16),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))
           ),
+        ),
+        appBarTheme: existingTheme.appBarTheme.copyWith(
+          backgroundColor: Color(0xFF020154),
+          titleTextStyle: TextStyle(fontSize: 20, color: Colors.white),
+          iconTheme: IconThemeData(size: 20, color: Colors.white),
         ),
         inputDecorationTheme: existingTheme.inputDecorationTheme.copyWith(
           filled: true,

@@ -28,7 +28,7 @@ class TaskList extends AsyncNotifier<List<Task>> {
     return await database.select(database.tasks).get();
   }
 
-  void add(TaskAddRequest taskAddRequest) async {
+  void addTask(TaskAddRequest taskAddRequest) async {
     final TasksCompanion newTask = TasksCompanion(
       title: Value(taskAddRequest.title),
       description: Value(taskAddRequest.description),
@@ -42,7 +42,7 @@ class TaskList extends AsyncNotifier<List<Task>> {
     ref.invalidateSelf();
   }
 
-  void markComplete(String id) async {
+  void markTaskComplete(String id) async {
     await (database.update(database.tasks)
       ..where((task) => task.id.isValue(id))).write(
       TasksCompanion(
@@ -53,25 +53,27 @@ class TaskList extends AsyncNotifier<List<Task>> {
     ref.invalidateSelf();
   }
 
-  void markIncomplete(String id) async {
+  void markTaskIncomplete(String id) async {
     await (database.update(database.tasks)..where(
       (task) => task.id.isValue(id),
     )).write(TasksCompanion(completed: Value(false), completedOn: Value(null)));
     ref.invalidateSelf();
   }
 
-  void edit({required String id, required String description}) {
-    // state = [
-    //   for (final todo in state)
-    //     if (todo.id == id)
-    //       Task(id: todo.id, completed: todo.completed, title: description)
-    //     else
-    //       todo,
-    // ];
+  void editTaskById(String id, TaskAddRequest taskEditRequest) async {
+    await (database.update(database.tasks)..where(
+        (task) => task.id.isValue(id),
+    )).write(TasksCompanion(
+      title: Value(taskEditRequest.title),
+      description: Value(taskEditRequest.description),
+      parentId: Value(taskEditRequest.parentId),
+      priority: Value(taskEditRequest.priority),
+    ));
+    ref.invalidateSelf();
   }
 
 
-  void delete(String id) async {
+  void deleteTaskById(String id) async {
     await (database.delete(database.tasks)
       ..where((task) => task.id.isValue(id))).go();
     ref.invalidateSelf();

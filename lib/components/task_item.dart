@@ -20,7 +20,11 @@ class TaskItem extends HookConsumerWidget {
       child: ListTile(
         visualDensity: VisualDensity.compact,
         onTap: () {
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) => TaskDetailScreen(task: task)));
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => TaskDetailScreen(task: task),
+            ),
+          );
         },
         leading: Checkbox(
           value: isCompleted,
@@ -28,9 +32,9 @@ class TaskItem extends HookConsumerWidget {
             if (value == null) return;
             isCompleted = value;
             if (value)
-              ref.read(taskListProvider.notifier).markComplete(task.id);
+              ref.read(taskListProvider.notifier).markTaskComplete(task.id);
             else
-              ref.read(taskListProvider.notifier).markIncomplete(task.id);
+              ref.read(taskListProvider.notifier).markTaskIncomplete(task.id);
           },
         ),
         title: Opacity(
@@ -43,7 +47,7 @@ class TaskItem extends HookConsumerWidget {
                 alignment: Alignment.centerLeft,
                 child: PriorityPill(priority: task.priority),
               ),
-             Text(task.parentId ?? '')
+              Text(task.parentId ?? ''),
             ],
           ),
         ),

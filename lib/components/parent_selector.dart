@@ -53,6 +53,20 @@ class ParentSelector extends HookConsumerWidget {
       },
       expandedInsets: EdgeInsets.zero,
       enableFilter: true,
+      leadingIcon: SizedBox(
+        width: 8,
+        height: 8,
+        child: Center(
+          child: Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(
+              color: priorityColours[selectedTask.value?.priority],
+              shape: BoxShape.circle,
+            ),
+          ),
+        ),
+      ),
       inputDecorationTheme: InputDecorationTheme.of(context),
       dropdownMenuEntries: [
         for (final task in filteredTaskList)

@@ -101,7 +101,7 @@ class Home extends HookConsumerWidget {
               Dismissible(
                 key: ValueKey(tasks[i].id),
                 onDismissed: (_) async {
-                  ref.read(taskListProvider.notifier).delete(tasks[i].id);
+                  ref.read(taskListProvider.notifier).deleteTaskById(tasks[i].id);
                 },
                 child: ProviderScope(
                   overrides: [currentTask.overrideWithValue(tasks[i])],
@@ -119,7 +119,7 @@ class Home extends HookConsumerWidget {
                 return Dialog.fullscreen(
                   child: AddTaskDialog(
                     onAdd: (taskAddRequest) {
-                      ref.read(taskListProvider.notifier).add(taskAddRequest);
+                      ref.read(taskListProvider.notifier).addTask(taskAddRequest);
                       Navigator.pop(context);
                     },
                   ),
