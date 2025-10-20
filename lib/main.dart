@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hooks_riverpod/legacy.dart';
+import 'package:task_finch/components/base_nav.dart';
 import 'package:task_finch/data/database.dart';
 import 'package:task_finch/dialogs/add_task_dialog.dart';
 
@@ -28,7 +29,6 @@ enum TaskListFilter { all, active, completed }
 
 final taskListFilter = StateProvider((_) => TaskListFilter.all);
 
-
 final uncompletedTasksCount = Provider<int>((ref) {
   return ref
           .watch(taskListProvider)
@@ -48,8 +48,12 @@ final filteredTasks = Provider<List<Task>>((ref) {
       return tasks.value?.where((todo) => !todo.completed).toList() ?? [];
     case TaskListFilter.all:
       // ensure the incomplete tasks are at the top
-  final incompleteTasks = tasks.value?.where((task) => !task.completed).sortedBy((task) => task.priority.index);
-  final completeTasks = tasks.value?.where((task) => task.completed).sortedBy((task) => task.priority.index);
+      final incompleteTasks = tasks.value
+          ?.where((task) => !task.completed)
+          .sortedBy((task) => task.priority.index);
+      final completeTasks = tasks.value
+          ?.where((task) => task.completed)
+          .sortedBy((task) => task.priority.index);
       return [...?incompleteTasks, ...?completeTasks];
   }
 });
@@ -71,66 +75,59 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TFTheme(child: Builder(
-      builder: (context) {
-        return MaterialApp(theme: Theme.of(context), home: Home());
-      }
-    ));
+    return TFTheme(
+      child: Builder(
+        builder: (context) {
+          return MaterialApp(theme: Theme.of(context), home: Home());
+        },
+      ),
+    );
   }
 }
 
 class Home extends HookConsumerWidget {
   const Home({super.key});
 
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tasks = ref.watch(filteredTasks);
 
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: Scaffold(
-        body: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-          children: [
-            const SizedBox(height: 42),
-            const Toolbar(),
-            if (tasks.isNotEmpty) const Divider(height: 0),
-            for (var i = 0; i < tasks.length; i++) ...[
-              if (i > 0) const Divider(height: 0),
-              Dismissible(
-                key: ValueKey(tasks[i].id),
-                onDismissed: (_) async {
-                  ref.read(taskListProvider.notifier).deleteTaskById(tasks[i].id);
-                },
-                child: ProviderScope(
-                  overrides: [currentTask.overrideWithValue(tasks[i])],
-                  child: const TaskItem(),
-                ),
-              ),
-            ],
+    return Scaffold(
+      appBar: AppBar(title: Text('List Finch')),
+      body: ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        children: [
+          const SizedBox(height: 42),
+          const Toolbar(),
+          if (tasks.isNotEmpty) const Divider(height: 0),
+          for (var i = 0; i < tasks.length; i++) ...[
+            if (i > 0) const Divider(height: 0),
+            ProviderScope(
+              overrides: [currentTask.overrideWithValue(tasks[i])],
+              child: const TaskItem(),
+            ),
           ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (context) {
-                return Dialog.fullscreen(
-                  child: AddTaskDialog(
-                    onAdd: (taskAddRequest) {
-                      ref.read(taskListProvider.notifier).addTask(taskAddRequest);
-                      Navigator.pop(context);
-                    },
-                  ),
-                );
-              },
-            );
-          },
-          child: const Icon(Icons.add),
-        ),
-        bottomNavigationBar: const Navbar(),
+        ],
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return Dialog.fullscreen(
+                child: AddTaskDialog(
+                  onAdd: (taskAddRequest) {
+                    ref.read(taskListProvider.notifier).addTask(taskAddRequest);
+                    Navigator.pop(context);
+                  },
+                ),
+              );
+            },
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
+      bottomNavigationBar: BaseNav(selectedIndex: 0,),
     );
   }
 }

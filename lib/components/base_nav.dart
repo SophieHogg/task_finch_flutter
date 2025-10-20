@@ -13,8 +13,9 @@ class NavItem {
 }
 
 class BaseNav extends StatelessWidget {
-  BaseNav({super.key});
+  BaseNav({super.key, this.selectedIndex = null});
 
+  final int? selectedIndex;
   final List<NavItem> navDestinations = [
     NavItem(
       icon: Icon(Icons.home_filled),
@@ -31,21 +32,33 @@ class BaseNav extends StatelessWidget {
       label: 'Search',
       action:
           (BuildContext context) => Navigator.popUntil(
-        context,
-        ModalRoute.withName(Navigator.defaultRouteName),
-      ),
+            context,
+            ModalRoute.withName(Navigator.defaultRouteName),
+          ),
     ),
   ];
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      onTap: (index) => navDestinations[index].action(context),
-      items: [
-        for(final navDestination in navDestinations)
-        BottomNavigationBarItem(icon: navDestination.icon, label: navDestination.label )
-        // NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
-      ],
+    return SafeArea(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          for (final (index, navDestination) in navDestinations.indexed)
+            Tooltip(
+              message: navDestination.label,
+              child: IconButton.filled(
+                disabledColor: Colors.white,
+                style: ButtonStyle(
+                  backgroundColor: selectedIndex == null || selectedIndex != index ? WidgetStatePropertyAll(Colors.transparent) : WidgetStatePropertyAll(Colors.blue)
+                ),
+                color: selectedIndex == null || selectedIndex != index ? Colors.black : Colors.white,
+                onPressed: selectedIndex == null || selectedIndex != index ? () => navDestination.action(context) : (null),
+                icon: navDestination.icon,
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
