@@ -166,7 +166,7 @@ class Toolbar extends HookConsumerWidget {
         children: [
           Expanded(
             child: Text(
-              '${ref.watch(uncompletedTasksCount)} items left',
+              '${ref.watch(uncompletedTasksCount)} item${ref.watch(uncompletedTasksCount) > 1 ?'s' : ''} left',
               overflow: TextOverflow.ellipsis,
             ),
           ),

@@ -50,7 +50,7 @@ class BaseNav extends StatelessWidget {
               child: IconButton.filled(
                 disabledColor: Colors.white,
                 style: ButtonStyle(
-                  backgroundColor: selectedIndex == null || selectedIndex != index ? WidgetStatePropertyAll(Colors.transparent) : WidgetStatePropertyAll(Colors.blue)
+                  backgroundColor: selectedIndex == null || selectedIndex != index ? WidgetStatePropertyAll(Colors.transparent) : WidgetStatePropertyAll(Color(0xFF5F4D9D))
                 ),
                 color: selectedIndex == null || selectedIndex != index ? Colors.black : Colors.white,
                 onPressed: selectedIndex == null || selectedIndex != index ? () => navDestination.action(context) : (null),
