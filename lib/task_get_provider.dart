@@ -8,5 +8,6 @@ final taskById = FutureProvider.family<Task?, String>((ref, id) async {
 });
 
 final subtasksForTaskId = FutureProvider.family<List<Task>, String>((ref, id) async {
+  ref.watch(taskListProvider);
   return await (database.select(database.tasks)..where((task) => task.parentId.isValue(id))).get();
 });

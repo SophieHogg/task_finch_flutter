@@ -25,7 +25,8 @@ class TaskAddRequest {
 class TaskList extends AsyncNotifier<List<Task>> {
   @override
   Future<List<Task>> build() async {
-    return await database.select(database.tasks).get();
+    return (await database.select(database.tasks)
+      ..where((task) => task.parentId.isNull())).get();
   }
 
   void addTask(TaskAddRequest taskAddRequest) async {
@@ -61,22 +62,21 @@ class TaskList extends AsyncNotifier<List<Task>> {
   }
 
   void editTaskById(String id, TaskAddRequest taskEditRequest) async {
-    await (database.update(database.tasks)..where(
-        (task) => task.id.isValue(id),
-    )).write(TasksCompanion(
-      title: Value(taskEditRequest.title),
-      description: Value(taskEditRequest.description),
-      parentId: Value(taskEditRequest.parentId),
-      priority: Value(taskEditRequest.priority),
-    ));
+    await (database.update(database.tasks)
+      ..where((task) => task.id.isValue(id))).write(
+      TasksCompanion(
+        title: Value(taskEditRequest.title),
+        description: Value(taskEditRequest.description),
+        parentId: Value(taskEditRequest.parentId),
+        priority: Value(taskEditRequest.priority),
+      ),
+    );
     ref.invalidateSelf();
   }
-
 
   void deleteTaskById(String id) async {
     await (database.delete(database.tasks)
       ..where((task) => task.id.isValue(id))).go();
     ref.invalidateSelf();
-
   }
 }

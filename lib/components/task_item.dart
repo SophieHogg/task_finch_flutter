@@ -47,8 +47,14 @@ class TaskItem extends HookConsumerWidget {
                 alignment: Alignment.centerLeft,
                 child: PriorityPill(priority: task.priority),
               ),
-              Text(task.parentId ?? ''),
             ],
+          ),
+        ),
+        trailing: SizedBox(
+          width: 60,
+          child: SubmenuButton(
+            child: Icon(Icons.more_horiz_rounded),
+            menuChildren: [MenuItemButton()],
           ),
         ),
       ),
