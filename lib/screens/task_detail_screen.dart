@@ -180,7 +180,7 @@ class TaskDetailScreen extends HookConsumerWidget {
 
                     children: [
                       Text(
-                        'Subtasks${subtaskListLength > 0 ? '( $subtaskListLength)' : ''}:',
+                        'Subtasks${subtaskListLength > 0 ? ' ($subtaskListLength)' : ''}:',
                         style: TextStyle(fontWeight: FontWeight.w700),
                       ),
                       IconButton(onPressed: () =>

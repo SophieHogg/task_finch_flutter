@@ -5,9 +5,10 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../data/database.dart';
 import '../main.dart';
+import '../task_get_provider.dart';
 
-final possibleParentProvider = Provider<List<Task>>((ref) {
-  final tasks = ref.watch(taskListProvider);
+final possibleParentProvider = Provider.family<List<Task>, String?>((ref, taskId) {
+  final tasks = ref.watch(tasksExceptForId(taskId));
   // ensure the incomplete tasks are at the top
   final incompleteTasks = tasks.value
       ?.where((task) => !task.completed)
@@ -35,9 +36,9 @@ class ParentSelector extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedTask = useState<Task?>(initialParent);
-    final taskList = ref.watch(possibleParentProvider);
+    final taskList = ref.watch(possibleParentProvider(taskId));
     final filteredTaskList = taskList.whereNot((task) => task.id == taskId);
-    final taskController = useTextEditingController();
+    final taskController = useTextEditingController(text: initialParent?.title);
     return DropdownMenu<Task>(
       initialSelection: selectedTask.value,
       controller: taskController,
