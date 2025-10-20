@@ -94,20 +94,32 @@ class Home extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text('List Finch')),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        children: [
-          const SizedBox(height: 42),
-          const Toolbar(),
-          if (tasks.isNotEmpty) const Divider(height: 0),
-          for (var i = 0; i < tasks.length; i++) ...[
-            if (i > 0) const Divider(height: 0),
-            ProviderScope(
-              overrides: [currentTask.overrideWithValue(tasks[i])],
-              child: const TaskItem(),
-            ),
-          ],
-        ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        
+          child: Column(
+            spacing: 8,
+            children: [
+              const Toolbar(),
+              if (tasks.isNotEmpty) const Divider(height: 0),
+              Card(
+                clipBehavior: Clip.antiAlias,
+                elevation: 5,
+                child: Column(children: [
+        
+                for (var i = 0; i < tasks.length; i++) ...[
+                  if (i > 0) const Divider(height: 0),
+                  ProviderScope(
+                    overrides: [currentTask.overrideWithValue(tasks[i])],
+                    child: const TaskItem(),
+                  ),
+                ],
+                ],),
+              )
+            ],
+          ),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

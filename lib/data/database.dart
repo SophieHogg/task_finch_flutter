@@ -13,7 +13,7 @@ enum Priority {
 class Tasks extends Table {
   TextColumn get id => text().unique()();
   IntColumn get rId => integer().autoIncrement()();
-  TextColumn get title => text().withLength(min: 1, max: 32)();
+  TextColumn get title => text().withLength(min: 1, max: 50)();
   TextColumn get description => text().nullable()();
   BoolColumn get completed => boolean()();
   TextColumn get priority => textEnum<Priority>().withDefault(Constant('medium'))();

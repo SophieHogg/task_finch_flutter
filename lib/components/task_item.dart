@@ -64,8 +64,9 @@ class TaskItem extends HookConsumerWidget {
           opacity: task.completed ? 0.6 : 1,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 4,
             children: [
-              Text(task.title),
+              Text(task.title, maxLines: 3),
               Align(
                 alignment: Alignment.centerLeft,
                 child: PriorityPill(priority: task.priority),

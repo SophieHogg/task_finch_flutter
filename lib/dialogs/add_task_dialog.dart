@@ -57,9 +57,9 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                   ),
                 ),
                 validator: (String? value) {
-                  return ((value == null || value.trim() == '')
-                      ? 'Title is required'
-                      : null);
+                  if ((value == null || value.trim() == '')) return 'Title is required';
+                  else if(value.length > 50) return 'Max length: 50 characters. Current length: ${value.length}';
+                  else return null;
                 },
               ),
               TextFormField(

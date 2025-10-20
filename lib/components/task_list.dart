@@ -11,13 +11,17 @@ class SubtaskList extends  StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        for(final task in taskList) ProviderScope(
-          overrides: [currentTask.overrideWithValue(task)],
-          child: const TaskItem(),
-        ),
-      ],
+    return Card(
+      elevation: 3,
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        children: [
+          for(final task in taskList) ProviderScope(
+            overrides: [currentTask.overrideWithValue(task)],
+            child: const TaskItem(),
+          ),
+        ],
+      ),
     );
   }
 }
