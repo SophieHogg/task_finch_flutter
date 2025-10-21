@@ -5,6 +5,7 @@ import 'package:task_finch/components/priority_pill.dart';
 import 'package:task_finch/screens/task_detail_screen.dart';
 
 import '../main.dart';
+import '../theming/constants.dart';
 
 class TaskItemSubmenuItem {
   final String? label;
@@ -38,7 +39,7 @@ class TaskItem extends HookConsumerWidget {
     final key = useState(ValueKey(0));
 
     return Material(
-      color: Colors.white,
+      color: lightTopColour,
       elevation: 6,
       child: ListTile(
         visualDensity: VisualDensity.compact,

@@ -31,7 +31,7 @@ class TFTheme extends StatelessWidget {
         ),
         inputDecorationTheme: existingTheme.inputDecorationTheme.copyWith(
           filled: true,
-          fillColor: Colors.white,
+          fillColor: lightTopColour,
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30),
           ),
