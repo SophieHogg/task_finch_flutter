@@ -4,6 +4,7 @@ import 'package:task_finch/components/priority_selector.dart';
 import 'package:task_finch/task_provider.dart';
 
 import '../data/database.dart';
+import '../theming/constants.dart';
 
 class AddTaskDialog extends StatefulWidget {
   const AddTaskDialog({super.key, required this.onAdd, this.defaultParent});
@@ -111,7 +112,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                     );
                   }
                 },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                style: ElevatedButton.styleFrom(backgroundColor: positiveColour),
                 child: Row(
                   spacing: 8.0,
                   mainAxisAlignment: MainAxisAlignment.center,

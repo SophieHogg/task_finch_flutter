@@ -9,7 +9,6 @@ import 'package:task_finch/data/database.dart';
 import 'package:task_finch/dialogs/add_task_dialog.dart';
 import 'package:task_finch/theming/constants.dart';
 
-import 'components/navbar.dart';
 import 'components/task_item.dart';
 import 'theming/theme.dart';
 import 'task_provider.dart';
@@ -122,6 +121,8 @@ class Home extends HookConsumerWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        shape: const CircleBorder(),
+        backgroundColor: positiveColour,
         onPressed: () {
           showDialog(
             context: context,
@@ -137,7 +138,7 @@ class Home extends HookConsumerWidget {
             },
           );
         },
-        child: const Icon(Icons.add),
+        child: const Icon(color: Colors.white, Icons.add),
       ),
       bottomNavigationBar: BaseNav(selectedIndex: 0,),
     );

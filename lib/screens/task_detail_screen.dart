@@ -11,6 +11,7 @@ import 'package:task_finch/components/task_inkwell.dart';
 import 'package:task_finch/components/task_list.dart';
 import 'package:task_finch/main.dart';
 import 'package:task_finch/task_provider.dart';
+import 'package:task_finch/theming/constants.dart';
 
 import '../components/task_item.dart';
 import '../data/database.dart';
@@ -84,159 +85,170 @@ class TaskDetailScreen extends HookConsumerWidget {
             : Text(editedText.text),
       ),
       body: SingleChildScrollView(
-        child: SafeArea(
-          minimum: EdgeInsets.all(16.0),
-          child: Column(
-            spacing: 16.0,
+          child: SafeArea(
+            minimum: EdgeInsets.all(16.0),
+            child: Column(
+                spacing: 16.0,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                if (isEditing.value)
+            Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 4.0,
             children: [
-              if (isEditing.value)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 4.0,
-                  children: [
-                    Text(
-                      'Title:',
-                      style: TextStyle(fontWeight: FontWeight.w700),
-                    ),
-                    TextFormField(
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (String? value) {
-                        if ((value == null || value.trim() == ''))
-                          return 'Title is required';
-                        else if (value.length > 50)
-                          return 'Max length: 50 characters. Current length: ${value
-                              .length}';
-                        else
-                          return null;
-                      },
-                      controller: titleController,
-                    ),
-                  ],
-                ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 4.0,
-                children: [
-                  Text(
-                    'Description:',
-                    style: TextStyle(fontWeight: FontWeight.w700),
-                  ),
-                  isEditing.value == true
-                      ? TextField(
-                    minLines: 3,
-                    maxLines: 10,
-                    controller: descriptionController,
-                  )
-                      : descriptionController.text.isNotEmpty
-                      ? Text(descriptionController.text)
-                      : NoAttributeText(text: 'No description provided'),
-                ],
+              Text(
+                'Title:',
+                style: TextStyle(fontWeight: FontWeight.w700),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 4.0,
-                children: [
-                  if (!isEditing.value)
-                    Text(
-                      'Priority:',
-                      style: TextStyle(fontWeight: FontWeight.w700),
-                    ),
-                  isEditing.value == true
-                      ? PrioritySelector(
-                    priority: priority.value,
-                    onChangePriority:
-                        (newPriority) => priority.value = newPriority,
-                  )
-                      : PriorityPill(priority: priority.value),
-                ],
-              ),
-              if (parent != null)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 4.0,
-                  children: [
-                    if (!isEditing.value)
-                      Text(
-                        'Parent Task:',
-                        style: TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                    isEditing.value == true
-                        ? ParentSelector(
-                      taskId: task.id,
-                      initialParent: parent.value,
-                      onChangeParent:
-                          (newParent) => parent.value = newParent,
-                    )
-                        : TaskInkwell(task: parentValue),
-                  ],
-                ),
-              Column(
-                spacing: 4,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
-                    children: [
-                      Text(
-                        'Subtasks${subtaskListLength > 0 ? ' ($subtaskListLength)' : ''}:',
-                        style: TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                      IconButton(onPressed: () =>
-                          openAddTaskDialog(task, context, ref),
-                          icon: Icon(Icons.add))
-                    ],
-                  ),
-                  Divider(),
-                  if (subtaskList.value case final listValue?)
-                    listValue.isNotEmpty
-                        ? SubtaskList(taskList: listValue)
-                        : NoSubtaskList(
-                      onAddSubtask: () => openAddTaskDialog(task, context, ref),
-                    )
+              TextFormField(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                validator: (String? value) {
+                  if ((value == null || value.trim() == ''))
+                    return 'Title is required';
+                  else if (value.length > 50)
+                    return 'Max length: 50 characters. Current length: ${value
+                        .length}';
                   else
-                    Text('loading...'),
-                ],
+                    return null;
+                },
+                controller: titleController,
               ),
             ],
           ),
-        ),
-      ),
-      bottomNavigationBar: BaseNav(),
-      floatingActionButton: Tooltip(
-        message: disableSubmit ?
-            !titleHasText ?  'Title must be provided'
-          :  'Title must be less than 50 characters'
-          :  'Save Changes',
-        child: Opacity(
-          opacity: !disableSubmit || !isEditing.value ? 1 : 0.6,
-          child: FloatingActionButton(
-            onPressed:
-            !disableSubmit || isEditing.value == false
-                ? () {
-              if (isEditing.value == true) {
-                ref
-                    .read(taskListProvider.notifier)
-                    .editTaskById(
-                  task.id,
-                  TaskAddRequest(
-                    title: titleController.text,
-                    description: descriptionController.text,
-                    priority: priority.value,
-                    parentId: parentValue?.id,
-                  ),
-                );
-                isEditing.value = false;
-              } else {
-                isEditing.value = true;
-              }
-            }
-                : null,
-            child: Icon(isEditing.value == true ? Icons.check : Icons.edit),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 4.0,
+            children: [
+              Text(
+                'Description:',
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
+              isEditing.value == true
+                  ? TextField(
+                minLines: 3,
+                maxLines: 10,
+                controller: descriptionController,
+              )
+                  : descriptionController.text.isNotEmpty
+                  ? Text(descriptionController.text)
+                  : NoAttributeText(text: 'No description provided'),
+            ],
           ),
-        ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 4.0,
+            children: [
+              if (!isEditing.value)
+                Text(
+                  'Priority:',
+                  style: TextStyle(fontWeight: FontWeight.w700),
+                ),
+              isEditing.value == true
+                  ? PrioritySelector(
+                priority: priority.value,
+                onChangePriority:
+                    (newPriority) => priority.value = newPriority,
+              )
+                  : PriorityPill(priority: priority.value),
+            ],
+          ),
+          if (parent != null)
+      Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 4.0,
+      children: [
+        if (!isEditing.value)
+          Text(
+            'Parent Task:',
+            style: TextStyle(fontWeight: FontWeight.w700),
+          ),
+        isEditing.value == true
+            ? ParentSelector(
+          taskId: task.id,
+          initialParent: parent.value,
+          onChangeParent:
+              (newParent) => parent.value = newParent,
+        )
+            : TaskInkwell(task: parentValue),
+      ],
+    ),
+    Column(
+    spacing: 4,
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+    Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+    children: [
+    Text(
+    'Subtasks${subtaskListLength > 0 ? ' ($subtaskListLength)' : ''}:',
+    style: TextStyle(fontWeight: FontWeight.w700),
+    ),
+    Container(
+      decoration: BoxDecoration(
+          color: positiveColour,
+          borderRadius: BorderRadiusGeometry.circular(100)
       ),
+      child: IconButton(
+        color: Colors.white,
+      onPressed: () => openAddTaskDialog(task, context, ref),
+      icon: Icon(Icons.add)),
+    )
+    ],
+    ),
+    Divider(),
+    if (subtaskList.value case final listValue?)
+    listValue.isNotEmpty
+    ? SubtaskList(taskList: listValue)
+        : NoSubtaskList(
+    onAddSubtask: () => openAddTaskDialog(task, context, ref),
+    )
+    else
+    Text('loading...'),
+    ],
+    ),
+    ],
+    ),
+    ),
+    ),
+    bottomNavigationBar: BaseNav(),
+    floatingActionButton: Tooltip(
+    message: disableSubmit ?
+    !titleHasText ? 'Title must be provided'
+        : 'Title must be less than 50 characters'
+        : 'Save Changes',
+    child: Opacity(
+    opacity: !disableSubmit || !isEditing.value ? 1 : 0.6,
+    child: FloatingActionButton(
+    shape: const CircleBorder(),
+    backgroundColor: baseColour,
+    onPressed:
+    !disableSubmit || isEditing.value == false
+    ? () {
+    if (isEditing.value == true) {
+    ref
+        .read(taskListProvider.notifier)
+        .editTaskById(
+    task.id,
+    TaskAddRequest(
+    title: titleController.text,
+    description: descriptionController.text,
+    priority: priority.value,
+    parentId: parentValue?.id,
+    ),
+    );
+    isEditing.value = false;
+    } else {
+    isEditing.value = true;
+    }
+    }
+        : null,
+    child: Icon(color: Colors.white, isEditing.value == true ? Icons.check : Icons.edit),
+    ),
+    )
+    ,
+    )
+    ,
     );
   }
 }

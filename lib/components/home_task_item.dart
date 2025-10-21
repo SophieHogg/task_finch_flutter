@@ -8,7 +8,7 @@ import '../main.dart';
 import '../theming/constants.dart';
 
 class TaskItemSubmenuItem {
-  final String? label;
+  final Widget? label;
   final Widget? icon;
   final void Function() onPressed;
 
@@ -26,8 +26,8 @@ class HomeTaskItem extends HookConsumerWidget {
 
     List<TaskItemSubmenuItem> submenuItemList = [
       TaskItemSubmenuItem(
-        label: 'Delete',
-        icon: Icon(Icons.delete),
+        label: Text(style: TextStyle(color: dangerColour), 'Delete'),
+        icon: Icon(color: dangerColour, Icons.delete),
         onPressed: () {
           ref.read(taskListProvider.notifier).deleteTaskById(task.id);
         },
@@ -115,7 +115,7 @@ class HomeTaskItem extends HookConsumerWidget {
                 MenuItemButton(
                   onPressed: menuItem.onPressed,
                   leadingIcon: menuItem.icon,
-                  child: Text(menuItem.label ?? ''),
+                  child: menuItem.label ?? SizedBox.shrink(),
                 ),
             ],
           ),

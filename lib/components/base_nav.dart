@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task_finch/theming/constants.dart';
 
 class NavItem {
   final Widget icon;
@@ -50,7 +51,7 @@ class BaseNav extends StatelessWidget {
               child: IconButton.filled(
                 disabledColor: Colors.white,
                 style: ButtonStyle(
-                  backgroundColor: selectedIndex == null || selectedIndex != index ? WidgetStatePropertyAll(Colors.transparent) : WidgetStatePropertyAll(Color(0xFF5F4D9D))
+                  backgroundColor: selectedIndex == null || selectedIndex != index ? WidgetStatePropertyAll(Colors.transparent) : WidgetStatePropertyAll(secondaryColour)
                 ),
                 color: selectedIndex == null || selectedIndex != index ? Colors.black : Colors.white,
                 onPressed: selectedIndex == null || selectedIndex != index ? () => navDestination.action(context) : (null),
