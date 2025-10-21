@@ -103,7 +103,7 @@ class HomeTaskItem extends HookConsumerWidget {
               ),
             ),
             child: Icon(Icons.more_horiz_rounded),
-            alignmentOffset: Offset(-30, 0),
+            alignmentOffset: Offset(-50, 0),
             key: key.value,
             onFocusChange: (isFocused) {
               if (!isFocused) key.value = ValueKey(key.value.value + 1);

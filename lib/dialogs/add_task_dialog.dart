@@ -10,6 +10,7 @@ class AddTaskDialog extends StatefulWidget {
 
   final void Function(TaskAddRequest taskAddRequest) onAdd;
   final Task? defaultParent;
+
   @override
   State<AddTaskDialog> createState() => _AddTaskDialogState();
 }
@@ -23,6 +24,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
   Priority priority = Priority.medium;
 
   Task? parent;
+
   @override
   void initState() {
     super.initState();
@@ -32,51 +34,73 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title:               Text("New Task"),
-      ),
+      appBar: AppBar(title: Text("New Task")),
+      // bottomNavigationBar: ElevatedButton(onPressed: null, child: Text('h')),
       body: Form(
         key: _formKey,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
           child: Column(
-            spacing: 16.0,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Column(
+                      spacing: 16.0,
+                      children: [
+                        TextFormField(
+                          controller: titleController,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          decoration: const InputDecoration(
+                            label: const Row(
+                              spacing: 4,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Text('Title'),
+                                const Text(
+                                  '*',
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                              ],
+                            ),
+                          ),
+                          validator: (String? value) {
+                            if ((value == null || value.trim() == ''))
+                              return 'Title is required';
+                            else if (value.length > 50)
+                              return 'Max length: 50 characters. Current length: ${value.length}';
+                            else
+                              return null;
+                          },
+                        ),
 
-              TextFormField(
-                controller: titleController,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                decoration: const InputDecoration(
-                  label: const Row(
-                    spacing: 4,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text('Title'),
-                      const Text('*', style: TextStyle(color: Colors.red)),
-                    ],
+                        TextFormField(
+                          controller: descriptionController,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          decoration: const InputDecoration(
+                            labelText: 'Description',
+                          ),
+                          minLines: 3,
+                          maxLines: 5,
+                        ),
+                        PrioritySelector(
+                          priority: priority,
+                          onChangePriority: (newPriority) => priority = newPriority,
+                        ),
+                        ParentSelector(
+                          onChangeParent: (newParent) => parent = newParent,
+                          initialParent: parent,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                validator: (String? value) {
-                  if ((value == null || value.trim() == '')) return 'Title is required';
-                  else if(value.length > 50) return 'Max length: 50 characters. Current length: ${value.length}';
-                  else return null;
-                },
               ),
-              TextFormField(
-                controller: descriptionController,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                decoration: const InputDecoration(labelText: 'Description'),
-                minLines: 3,
-                maxLines: 5,
-              ),
-              PrioritySelector(priority: priority, onChangePriority: (newPriority) => priority = newPriority),
-              ParentSelector(onChangeParent: (newParent) => parent = newParent, initialParent: parent),
-              Spacer(),
               ElevatedButton(
-
                 onPressed: () {
-
-                  if (_formKey.currentState?.validate()?? false) {
+                  if (_formKey.currentState?.validate() ?? false) {
                     widget.onAdd(
                       TaskAddRequest(
                         title: titleController.text.trim(),

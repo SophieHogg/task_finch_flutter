@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:task_finch/components/priority_circle.dart';
 
 import '../data/database.dart';
 import '../main.dart';
@@ -54,34 +55,14 @@ class ParentSelector extends HookConsumerWidget {
       },
       expandedInsets: EdgeInsets.zero,
       enableFilter: true,
-      leadingIcon: SizedBox(
-        width: 8,
-        height: 8,
-        child: Center(
-          child: Container(
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(
-              color: priorityColours[selectedTask.value?.priority],
-              shape: BoxShape.circle,
-            ),
-          ),
-        ),
-      ),
+      leadingIcon: PriorityCircle(priority: selectedTask.value?.priority),
       inputDecorationTheme: InputDecorationTheme.of(context),
       dropdownMenuEntries: [
         for (final task in filteredTaskList)
           TaskEntry(
             value: task,
             label: task.title,
-            leadingIcon: Container(
-              width: 8,
-              height: 8,
-              decoration: BoxDecoration(
-                color: priorityColours[task.priority],
-                shape: BoxShape.circle,
-              ),
-            ),
+            leadingIcon: PriorityCircle(priority: task.priority)
           ),
       ],
     );

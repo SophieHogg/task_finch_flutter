@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:task_finch/components/priority_circle.dart';
 import 'package:task_finch/helpers/text_helpers.dart';
+import 'package:task_finch/theming/business_logic_theming.dart';
 
 import '../data/database.dart';
 typedef PriorityEntry = DropdownMenuEntry<Priority>;
@@ -14,11 +16,7 @@ class PrioritySelector extends HookWidget {
 
   final Priority priority;
   final void Function(Priority priority) onChangePriority;
-  final Map<Priority, Color> priorityColours = {
-    Priority.high: Colors.red,
-    Priority.medium: Colors.orange,
-    Priority.low: Colors.green,
-  };
+
   @override
   Widget build(BuildContext context) {
     final _lastSelection = useState<Priority>(priority);
@@ -32,22 +30,16 @@ class PrioritySelector extends HookWidget {
         _lastSelection.value = priority ?? Priority.medium;
         onChangePriority(priority ?? Priority.medium);
       },
+      leadingIcon: PriorityCircle(priority: _lastSelection.value),
       expandedInsets: EdgeInsets.zero,
       enableFilter: false,
       inputDecorationTheme: InputDecorationTheme.of(context),
       dropdownMenuEntries: [
-        for (final priority in priorityColours.entries)
+        for (final priority in priorityGradients.entries)
           PriorityEntry(
             value: priority.key,
             label: priority.key.name.toSentenceCase(),
-            leadingIcon: Container(
-              width: 8,
-              height: 8,
-              decoration: BoxDecoration(
-                color: priority.value,
-                shape: BoxShape.circle,
-              ),
-            ),
+            leadingIcon: PriorityCircle(priority: priority.key)
           ),
       ],
     );
