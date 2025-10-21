@@ -16,7 +16,7 @@ class PriorityPill extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(color: priorityColours[priority], borderRadius: BorderRadius.circular(20)),
-        padding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 16.0),
+        padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 10.0),
         child: Text(priority.name.toSentenceCase(), style: TextStyle(color: Colors.white, fontSize: 12))
     );
   }

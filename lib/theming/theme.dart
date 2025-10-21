@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'constants.dart';
+
 class TFTheme extends StatelessWidget {
   const TFTheme({super.key, required this.child});
 
@@ -8,12 +10,12 @@ class TFTheme extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final existingTheme = ThemeData(
-      colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF020154)),
+      colorScheme: ColorScheme.fromSeed(seedColor: baseColour),
     );
     return Theme(
 
       data: existingTheme.copyWith(
-        colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF020154)),
+        colorScheme: ColorScheme.fromSeed(seedColor: baseColour, surface: lightBackgroundColour, ),
         outlinedButtonTheme: OutlinedButtonThemeData(
           style: OutlinedButton.styleFrom(
             backgroundColor: Colors.white,
@@ -21,8 +23,9 @@ class TFTheme extends StatelessWidget {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))
           ),
         ),
+        scaffoldBackgroundColor: lightBackgroundColour,
         appBarTheme: existingTheme.appBarTheme.copyWith(
-          backgroundColor: Color(0xFF020154),
+          backgroundColor: baseColour,
           titleTextStyle: TextStyle(fontSize: 20, color: Colors.white),
           iconTheme: IconThemeData(size: 20, color: Colors.white),
         ),

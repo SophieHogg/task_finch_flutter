@@ -4,8 +4,10 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hooks_riverpod/legacy.dart';
 import 'package:task_finch/components/base_nav.dart';
+import 'package:task_finch/components/home_task_item.dart';
 import 'package:task_finch/data/database.dart';
 import 'package:task_finch/dialogs/add_task_dialog.dart';
+import 'package:task_finch/theming/constants.dart';
 
 import 'components/navbar.dart';
 import 'components/task_item.dart';
@@ -103,20 +105,18 @@ class Home extends HookConsumerWidget {
             children: [
               const Toolbar(),
               if (tasks.isNotEmpty) const Divider(height: 0),
-              Card(
-                clipBehavior: Clip.antiAlias,
-                elevation: 5,
-                child: Column(children: [
-        
-                for (var i = 0; i < tasks.length; i++) ...[
-                  if (i > 0) const Divider(height: 0),
-                  ProviderScope(
-                    overrides: [currentTask.overrideWithValue(tasks[i])],
-                    child: const TaskItem(),
-                  ),
-                ],
-                ],),
-              )
+              Column(
+                spacing: 8,
+                children: [
+
+              for (var i = 0; i < tasks.length; i++) ...[
+                // if (i > 0) const Divider(height: 0),
+                ProviderScope(
+                  overrides: [currentTask.overrideWithValue(tasks[i])],
+                  child: const HomeTaskItem(),
+                ),
+              ],
+              ],)
             ],
           ),
         ),
@@ -157,10 +157,10 @@ class Toolbar extends HookConsumerWidget {
     final filter = ref.watch(taskListFilter);
 
     Color? textColorFor(TaskListFilter value) {
-      return filter == value ? Colors.blue : Colors.black;
+      return filter == value ? Colors.red : baseColour;
     }
 
-    return Material(
+    return Container(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
