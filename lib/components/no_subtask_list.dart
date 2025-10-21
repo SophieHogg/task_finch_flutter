@@ -14,17 +14,6 @@ class NoSubtaskList extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text('You currently have no subtasks.'),
-        ElevatedButton(
-          onPressed: () => {onAddSubtask()},
-          child: Row(
-            spacing: 8,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.add),
-              Text('Add task'),
-            ],
-          ),
-        ),
       ],
     );
   }
