@@ -41,6 +41,9 @@ class ParentSelector extends HookConsumerWidget {
     final filteredTaskList = taskList.whereNot((task) => task.id == taskId);
     final taskController = useTextEditingController(text: initialParent?.title);
     return DropdownMenu<Task>(
+      // Disable the input if there are no tasks to be selected and show hint text
+      enabled: filteredTaskList.length > 0,
+      hintText: filteredTaskList.length == 0 ? 'No available tasks' : '',
       initialSelection: selectedTask.value,
       controller: taskController,
       // The default requestFocusOnTap value depends on the platform.
