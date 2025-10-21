@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:task_finch/components/no_attribute_text.dart';
+import 'package:task_finch/components/priority_circle.dart';
 import 'package:task_finch/data/database.dart';
 
 import '../screens/task_detail_screen.dart';
@@ -15,6 +16,7 @@ class TaskInkwell extends StatelessWidget {
   Widget build(BuildContext context) {
     if (task case final taskItem?)
       return InkWell(
+        borderRadius: BorderRadius.all(Radius.circular(100)),
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
@@ -22,21 +24,17 @@ class TaskInkwell extends StatelessWidget {
             ),
           );
         },
-        child: Row(
-          spacing: 8,
-          children: [
-            Container(
-              width: 8,
-              height: 8,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: priorityColours[taskItem.priority],
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-            Text(taskItem.title),
-          ],
+        child: Padding(
+          // Adjust for visual weight of priority circle
+          padding: const EdgeInsets.fromLTRB(10, 4, 16, 4),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 8,
+            children: [
+              PriorityCircle(priority: taskItem.priority),
+              Text(taskItem.title),
+            ],
+          ),
         ),
       );
     else
