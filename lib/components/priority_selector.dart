@@ -25,7 +25,6 @@ class PrioritySelector extends HookWidget {
       initialSelection: _lastSelection.value,
       enableSearch: false,
       requestFocusOnTap: false,
-      label: const Text('Priority'),
       onSelected: (Priority? priority) {
         _lastSelection.value = priority ?? Priority.medium;
         onChangePriority(priority ?? Priority.medium);

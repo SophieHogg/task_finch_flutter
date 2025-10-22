@@ -77,6 +77,10 @@ class TaskList extends AsyncNotifier<List<Task>> {
   void deleteTaskById(String id) async {
     await (database.delete(database.tasks)
       ..where((task) => task.id.isValue(id))).go();
+    // For now, if any task has the deleted task as parent - set their parents to null.
+    await (database.update(database.tasks)..where(
+      (task) => task.parentId.isValue(id),
+    )).write(TasksCompanion(parentId: Value(null)));
     ref.invalidateSelf();
   }
 }

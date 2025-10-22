@@ -46,8 +46,11 @@ class TaskItem extends HookConsumerWidget {
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => TaskDetailScreen(task: task),
+              builder: (context) => TaskDetailScreen(taskId: task.id),
             ),
+
+
+
           );
         },
         leading: Checkbox(

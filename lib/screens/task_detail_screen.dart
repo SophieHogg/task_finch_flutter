@@ -13,9 +13,11 @@ import 'package:task_finch/main.dart';
 import 'package:task_finch/task_provider.dart';
 import 'package:task_finch/theming/constants.dart';
 
+import '../components/priority_wide_indicator.dart';
 import '../components/task_item.dart';
 import '../data/database.dart';
 import '../dialogs/add_task_dialog.dart';
+import '../dialogs/edit_task_dialog.dart';
 import '../task_get_provider.dart';
 
 final Map<Priority, Color> priorityColours = {
@@ -25,9 +27,9 @@ final Map<Priority, Color> priorityColours = {
 };
 
 class TaskDetailScreen extends HookConsumerWidget {
-  const TaskDetailScreen({super.key, required this.task});
+  const TaskDetailScreen({super.key, required this.taskId});
 
-  final Task task;
+  final String taskId;
 
   ValueNotifier<Task?>? _parent(String? parentId, WidgetRef ref) {
     if (parentId == null)
@@ -61,26 +63,41 @@ class TaskDetailScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isEditing = useState<bool>(false);
+    final task = ref.watch(taskById(taskId)).value;
+    if (task == null) return SizedBox.shrink();
+
     final priority = useState<Priority>(task.priority);
 
-    final titleController = useTextEditingController(text: task.title);
-    final editedText = useListenable(titleController);
+    final taskTitle = task.title;
     final description = task.description?.trim() ?? '';
-    final descriptionController = useTextEditingController(text: description);
 
     final subtaskList = ref.watch(subtasksForTaskId(task.id));
     final parent = _parent(task.parentId, ref);
     final parentValue = parent?.value;
-    final titleHasText = editedText.text.isNotEmpty;
-    final titleTooLong = editedText.text.length > 50;
+    final titleHasText = taskTitle.isNotEmpty;
+    final titleTooLong = taskTitle.length > 50;
     final disableSubmit = !titleHasText && !titleTooLong;
 
     final subtaskListLength = subtaskList.value?.length ?? 0;
     return Scaffold(
       appBar: AppBar(
-        title:
-            Text('Task Details')
+        title: Text('Task Details'),
+        actions: [
+          IconButton(
+            onPressed:
+                () => {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return Dialog.fullscreen(
+                        child: EditTaskDialog(task: task),
+                      );
+                    },
+                  ),
+                },
+            icon: Icon(color: Colors.white, size: 30, Icons.edit),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: SafeArea(
@@ -89,60 +106,32 @@ class TaskDetailScreen extends HookConsumerWidget {
             spacing: 16.0,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (parent != null)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 4.0,
-                  children: [
-                    isEditing.value == true
-                        ? ParentSelector(
-                      taskId: task.id,
-                      initialParent: parent.value,
-                      onChangeParent:
-                          (newParent) => parent.value = newParent,
-                    )
-                        : TaskInkwell(task: parentValue),
-                  ],
-                ),
-              if (isEditing.value)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 4.0,
-                  children: [
-                    Text(
-                      'Title:',
-                      style: TextStyle(fontWeight: FontWeight.w700),
-                    ),
-                    TextFormField(
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (String? value) {
-                        if ((value == null || value.trim() == ''))
-                          return 'Title is required';
-                        else if (value.length > 50)
-                          return 'Max length: 50 characters. Current length: ${value.length}';
-                        else
-                          return null;
-                      },
-                      controller: titleController,
-                    ),
-                  ],
-                ) else Text(editedText.text, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 30),),
+              if (parentValue != null) TaskInkwell(task: parentValue),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 4,
+                children: [
+                  Text(
+                    taskTitle,
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 30),
+                  ),
+                  Text(
+                    'Task ${task.rId}',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ],
+              ),
+
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: 4.0,
                 children: [
                   Text(
                     'Description:',
-                    style: TextStyle(fontWeight: FontWeight.w700),
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
                   ),
-                  isEditing.value == true
-                      ? TextField(
-                        minLines: 3,
-                        maxLines: 10,
-                        controller: descriptionController,
-                      )
-                      : descriptionController.text.isNotEmpty
-                      ? Text(descriptionController.text)
+                  description.isNotEmpty
+                      ? Text(description, style: TextStyle(fontSize: 16))
                       : NoAttributeText(text: 'No description provided'),
                 ],
               ),
@@ -150,48 +139,33 @@ class TaskDetailScreen extends HookConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: 4.0,
                 children: [
-                  if (!isEditing.value)
-                    Text(
-                      'Priority:',
-                      style: TextStyle(fontWeight: FontWeight.w700),
-                    ),
-                  isEditing.value == true
-                      ? PrioritySelector(
-                        priority: priority.value,
-                        onChangePriority:
-                            (newPriority) => priority.value = newPriority,
-                      )
-                      : PriorityPill(priority: priority.value),
+                  Text(
+                    'Priority:',
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  PriorityIndicator(priority: task.priority),
                 ],
               ),
 
               Column(
-                spacing: 4,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  Divider(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
                     children: [
                       Text(
                         'Subtasks${subtaskListLength > 0 ? ' ($subtaskListLength)' : ''}:',
-                        style: TextStyle(fontWeight: FontWeight.w700),
+                        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
                       ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: positiveColour,
-                          borderRadius: BorderRadiusGeometry.circular(100),
+                      IconButton.filled(
+                        style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(positiveColour)),
+
+                        onPressed: () => openAddTaskDialog(task, context, ref),
+                        icon: Icon(Icons.add, color: Colors.white),
                         ),
-                        child: IconButton(
-                          color: Colors.white,
-                          onPressed:
-                              () => openAddTaskDialog(task, context, ref),
-                          icon: Icon(Icons.add),
-                        ),
-                      ),
                     ],
                   ),
-                  Divider(),
                   if (subtaskList.value case final listValue?)
                     listValue.isNotEmpty
                         ? SubtaskList(taskList: listValue)
@@ -208,46 +182,6 @@ class TaskDetailScreen extends HookConsumerWidget {
         ),
       ),
       bottomNavigationBar: BaseNav(),
-      floatingActionButton: Tooltip(
-        message:
-            disableSubmit
-                ? !titleHasText
-                    ? 'Title must be provided'
-                    : 'Title must be less than 50 characters'
-                : 'Save Changes',
-        child: Opacity(
-          opacity: !disableSubmit || !isEditing.value ? 1 : 0.6,
-          child: FloatingActionButton(
-            shape: const CircleBorder(),
-            backgroundColor: baseColour,
-            onPressed:
-                !disableSubmit || isEditing.value == false
-                    ? () {
-                      if (isEditing.value == true) {
-                        ref
-                            .read(taskListProvider.notifier)
-                            .editTaskById(
-                              task.id,
-                              TaskAddRequest(
-                                title: titleController.text,
-                                description: descriptionController.text,
-                                priority: priority.value,
-                                parentId: parentValue?.id,
-                              ),
-                            );
-                        isEditing.value = false;
-                      } else {
-                        isEditing.value = true;
-                      }
-                    }
-                    : null,
-            child: Icon(
-              color: Colors.white,
-              isEditing.value == true ? Icons.check : Icons.edit,
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

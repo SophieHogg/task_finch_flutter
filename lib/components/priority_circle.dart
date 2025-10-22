@@ -9,7 +9,7 @@ class PriorityCircle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return priority != null ? SizedBox(
+    return SizedBox(
       width: 12,
       height: 12,
       child: Center(
@@ -17,11 +17,11 @@ class PriorityCircle extends StatelessWidget {
           width: 12,
           height: 12,
           decoration: BoxDecoration(
-            gradient: priorityGradients[priority],
+            gradient: priority != null ? priorityGradients[priority] : nullPriority,
             shape: BoxShape.circle,
           ),
         ),
       ),
-    ) : SizedBox.shrink();
+    );
   }
 }

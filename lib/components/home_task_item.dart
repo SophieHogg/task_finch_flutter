@@ -43,13 +43,12 @@ class HomeTaskItem extends HookConsumerWidget {
       elevation: 6,
       child: ListTile(
         minLeadingWidth: 10,
-        contentPadding: EdgeInsets.all(2),
-        minVerticalPadding: 4,
+        contentPadding: EdgeInsets.symmetric(horizontal: 2),
         visualDensity: VisualDensity.compact,
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => TaskDetailScreen(task: task),
+              builder: (context) => TaskDetailScreen(taskId: task.id),
             ),
           );
         },
@@ -66,29 +65,43 @@ class HomeTaskItem extends HookConsumerWidget {
         ),
         title: Opacity(
           opacity: task.completed ? 0.6 : 1,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            spacing: 4,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Flexible(
-                child: Tooltip(
-                  message: task.title,
-                  child: Text(
-                    task.title,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
-                    style: TextStyle(
-                      fontSize: 20,
-                      letterSpacing: 0,
-                      fontWeight: FontWeight.w700,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                spacing: 4,
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: PriorityPill(priority: task.priority),
+                  ),
+                  Text(
+                    'Task #${task.rId}',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ],
+              ),
+
+              Row(
+                children: [
+                  Flexible(
+                    child: Tooltip(
+                      message: task.title,
+                      child: Text(
+                        task.title,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                        style: TextStyle(
+                          fontSize: 20,
+                          letterSpacing: 0,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: PriorityPill(priority: task.priority),
+                ],
               ),
             ],
           ),

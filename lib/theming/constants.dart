@@ -7,3 +7,4 @@ final Color lightTopColour = Color(0xFFFBFCFF);
 final Color positiveColour = Color(0xFF5F754B);
 final Color dangerColour = Color(0xFFA1121A);
 final Color secondaryColour = Color(0xFF5F4D9D);
+final Color dangerColourLighter = Color(0xFFbf131d);

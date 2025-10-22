@@ -29,7 +29,7 @@ class TaskInkwell extends StatelessWidget {
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => TaskDetailScreen(task: taskItem),
+                  builder: (context) => TaskDetailScreen(taskId: taskItem.id),
                 ),
               );
             },

@@ -7,6 +7,7 @@ import 'package:task_finch/components/priority_circle.dart';
 import '../data/database.dart';
 import '../main.dart';
 import '../task_get_provider.dart';
+import '../theming/business_logic_theming.dart';
 
 final possibleParentProvider = Provider.family<List<Task>, String?>((ref, taskId) {
   final tasks = ref.watch(tasksExceptForId(taskId));
@@ -21,7 +22,7 @@ final possibleParentProvider = Provider.family<List<Task>, String?>((ref, taskId
   return [...?incompleteTasks, ...?completeTasks];
 });
 
-typedef TaskEntry = DropdownMenuEntry<Task>;
+typedef TaskEntry = DropdownMenuEntry<Task?>;
 
 class ParentSelector extends HookConsumerWidget {
   ParentSelector({super.key, required this.onChangeParent, this.initialParent, this.taskId});
@@ -40,7 +41,7 @@ class ParentSelector extends HookConsumerWidget {
     final taskList = ref.watch(possibleParentProvider(taskId));
     final filteredTaskList = taskList.whereNot((task) => task.id == taskId);
     final taskController = useTextEditingController(text: initialParent?.title);
-    return DropdownMenu<Task>(
+    return DropdownMenu<Task?>(
       // Disable the input if there are no tasks to be selected and show hint text
       enabled: filteredTaskList.length > 0,
       hintText: filteredTaskList.length == 0 ? 'No available tasks' : '',
@@ -51,7 +52,6 @@ class ParentSelector extends HookConsumerWidget {
       // Setting this to true will trigger a focus request on the text field, and
       // the virtual keyboard will appear afterward.
       requestFocusOnTap: true,
-      label: const Text('Parent Task'),
       onSelected: (Task? task) {
         selectedTask.value = task;
         onChangeParent(task);
@@ -61,6 +61,11 @@ class ParentSelector extends HookConsumerWidget {
       leadingIcon: PriorityCircle(priority: selectedTask.value?.priority),
       inputDecorationTheme: InputDecorationTheme.of(context),
       dropdownMenuEntries: [
+        TaskEntry(
+            value: null,
+            label: 'No parent',
+            leadingIcon: PriorityCircle(priority: null)
+        ),
         for (final task in filteredTaskList)
           TaskEntry(
             value: task,
