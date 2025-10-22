@@ -5,11 +5,12 @@ import 'package:task_finch/components/base_nav.dart';
 import 'package:task_finch/components/no_attribute_text.dart';
 import 'package:task_finch/components/no_subtask_list.dart';
 import 'package:task_finch/components/task_inkwell.dart';
-import 'package:task_finch/components/task_list.dart';
+import 'package:task_finch/helpers/date_helpers.dart';
 import 'package:task_finch/main.dart';
 import 'package:task_finch/theming/constants.dart';
 
 import '../components/priority_wide_indicator.dart';
+import '../components/subtask_list.dart';
 import '../data/database.dart';
 import '../dialogs/add_task_dialog.dart';
 import '../dialogs/edit_task_dialog.dart';
@@ -61,7 +62,6 @@ class TaskDetailScreen extends HookConsumerWidget {
     final task = ref.watch(taskById(taskId)).value;
     if (task == null) return SizedBox.shrink();
 
-
     final taskTitle = task.title;
     final description = task.description?.trim() ?? '';
 
@@ -97,11 +97,28 @@ class TaskDetailScreen extends HookConsumerWidget {
             spacing: 16.0,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (parentValue != null) TaskInkwell(task: parentValue),
+              if (task.completedOn case final completedOn?)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  spacing: 16,
+                  children: [
+                    Icon(
+                      Icons.checklist_rtl_rounded,
+                      size: 28,
+                      color: dangerColour,
+                    ),
+                    Text('Completed', style: TextStyle(fontSize: 18)),
+                    Text(
+                      completedOn.toRenderedDate(),
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ],
+                ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: 4,
                 children: [
+                  if (parentValue != null) TaskInkwell(task: parentValue),
                   Text(
                     taskTitle,
                     style: TextStyle(fontWeight: FontWeight.w700, fontSize: 30),
@@ -147,14 +164,21 @@ class TaskDetailScreen extends HookConsumerWidget {
                     children: [
                       Text(
                         'Subtasks${subtaskListLength > 0 ? ' ($subtaskListLength)' : ''}:',
-                        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 20,
+                        ),
                       ),
                       IconButton.filled(
-                        style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(positiveColour)),
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStatePropertyAll(
+                            positiveColour,
+                          ),
+                        ),
 
                         onPressed: () => openAddTaskDialog(task, context, ref),
                         icon: Icon(Icons.add, color: Colors.white),
-                        ),
+                      ),
                     ],
                   ),
                   if (subtaskList.value case final listValue?)

@@ -28,4 +28,6 @@ dev_dependencies:
   riverpod_lint:
 
 flutter:
+  assets:
+    - assets/
   uses-material-design: true

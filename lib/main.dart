@@ -1,17 +1,16 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hooks_riverpod/legacy.dart';
 import 'package:task_finch/components/base_nav.dart';
+import 'package:task_finch/components/circle_icon.dart';
 import 'package:task_finch/components/home_task_item.dart';
 import 'package:task_finch/data/database.dart';
 import 'package:task_finch/dialogs/add_task_dialog.dart';
 import 'package:task_finch/theming/constants.dart';
 
-import 'components/task_item.dart';
-import 'theming/theme.dart';
 import 'task_provider.dart';
+import 'theming/theme.dart';
 
 final activeFilterKey = UniqueKey();
 final completedFilterKey = UniqueKey();
@@ -94,11 +93,18 @@ class Home extends HookConsumerWidget {
     final tasks = ref.watch(filteredTasks);
 
     return Scaffold(
-      appBar: AppBar(title: Text('List Finch')),
+      appBar: AppBar(
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CircleIcon()
+        ),
+
+        title: Text('List Finch'),
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        
+
           child: Column(
             spacing: 8,
             children: [
@@ -107,15 +113,15 @@ class Home extends HookConsumerWidget {
               Column(
                 spacing: 8,
                 children: [
-
-              for (var i = 0; i < tasks.length; i++) ...[
-                // if (i > 0) const Divider(height: 0),
-                ProviderScope(
-                  overrides: [currentTask.overrideWithValue(tasks[i])],
-                  child: const HomeTaskItem(),
-                ),
-              ],
-              ],)
+                  for (var i = 0; i < tasks.length; i++) ...[
+                    // if (i > 0) const Divider(height: 0),
+                    ProviderScope(
+                      overrides: [currentTask.overrideWithValue(tasks[i])],
+                      child: const HomeTaskItem(),
+                    ),
+                  ],
+                ],
+              ),
             ],
           ),
         ),
@@ -140,7 +146,7 @@ class Home extends HookConsumerWidget {
         },
         child: const Icon(color: Colors.white, Icons.add),
       ),
-      bottomNavigationBar: BaseNav(selectedIndex: 0,),
+      bottomNavigationBar: BaseNav(selectedIndex: 0),
     );
   }
 }

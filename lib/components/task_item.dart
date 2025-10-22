@@ -4,15 +4,46 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:task_finch/components/priority_pill.dart';
 import 'package:task_finch/screens/task_detail_screen.dart';
 
+import '../data/database.dart';
+import '../dialogs/delete_task_dialog.dart';
 import '../main.dart';
 import '../theming/constants.dart';
 
 class TaskItemSubmenuItem {
-  final String? label;
+  final Widget? label;
   final Widget? icon;
   final void Function() onPressed;
 
   TaskItemSubmenuItem({this.label, this.icon, required this.onPressed});
+}
+
+void onDeleteTask(WidgetRef ref, BuildContext context, Task task) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return Dialog(
+        child: DeleteTaskDialog(
+          task: task,
+          onConfirm: () {
+            ref.read(taskListProvider.notifier).deleteTaskById(task.id);
+            Navigator.pop(context);
+          },
+          onCancel: () => Navigator.pop(context),
+        ),
+      );
+    },
+  );
+}
+
+List<TaskItemSubmenuItem> submenuItemList(WidgetRef ref, BuildContext context, Task task) {
+  return [
+    TaskItemSubmenuItem(
+      label: Text(style: TextStyle(color: dangerColour), 'Delete'),
+      icon: Icon(color: dangerColour, Icons.delete),
+      onPressed: () { onDeleteTask(ref, context, task);
+      },
+    ),
+  ];
 }
 
 class TaskItem extends HookConsumerWidget {
@@ -22,23 +53,14 @@ class TaskItem extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final task = ref.watch(currentTask);
 
-    bool isCompleted = task.completed;
 
-    List<TaskItemSubmenuItem> submenuItemList = [
-      TaskItemSubmenuItem(
-        label: 'Delete',
-        icon: Icon(Icons.delete),
-        onPressed: () {
-          ref.read(taskListProvider.notifier).deleteTaskById(task.id);
-        },
-      ),
-    ];
+    bool isCompleted = task.completed;
 
     // key here to update state of submenu button to prevent bug when opening dialog
     // or navigating away that causes the button to remain focused and reopen menu
     final key = useState(ValueKey(0));
 
-    return Material(
+    return Card(
       color: lightTopColour,
       elevation: 6,
       child: ListTile(
@@ -48,9 +70,6 @@ class TaskItem extends HookConsumerWidget {
             MaterialPageRoute(
               builder: (context) => TaskDetailScreen(taskId: task.id),
             ),
-
-
-
           );
         },
         leading: Checkbox(
@@ -70,11 +89,20 @@ class TaskItem extends HookConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 4,
             children: [
-              Text(task.title, maxLines: 3),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: PriorityPill(priority: task.priority),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: PriorityPill(priority: task.priority),
+                  ),
+                  Text(
+                    'Task #${task.rId}',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ],
               ),
+              Text(task.title, maxLines: 3),
             ],
           ),
         ),
@@ -96,11 +124,11 @@ class TaskItem extends HookConsumerWidget {
             },
             menuStyle: MenuStyle(alignment: Alignment.bottomLeft),
             menuChildren: [
-              for (final menuItem in submenuItemList)
+              for (final menuItem in submenuItemList(ref, context, task))
                 MenuItemButton(
                   onPressed: menuItem.onPressed,
                   leadingIcon: menuItem.icon,
-                  child: Text(menuItem.label ?? ''),
+                  child: menuItem.label ?? SizedBox.shrink(),
                 ),
             ],
           ),

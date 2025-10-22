@@ -5,9 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:task_finch/components/priority_circle.dart';
 
 import '../data/database.dart';
-import '../main.dart';
 import '../task_get_provider.dart';
-import '../theming/business_logic_theming.dart';
 
 final possibleParentProvider = Provider.family<List<Task>, String?>((ref, taskId) {
   final tasks = ref.watch(tasksExceptForId(taskId));
@@ -70,7 +68,8 @@ class ParentSelector extends HookConsumerWidget {
           TaskEntry(
             value: task,
             label: task.title,
-            leadingIcon: PriorityCircle(priority: task.priority)
+            leadingIcon: PriorityCircle(priority: task.priority),
+            trailingIcon: Text('#${task.rId}', style: TextStyle(color: Colors.grey, fontSize: 12),)
           ),
       ],
     );

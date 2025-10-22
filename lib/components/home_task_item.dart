@@ -2,18 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:task_finch/components/priority_pill.dart';
+import 'package:task_finch/components/task_item.dart';
+import 'package:task_finch/helpers/date_helpers.dart';
 import 'package:task_finch/screens/task_detail_screen.dart';
 
 import '../main.dart';
 import '../theming/constants.dart';
 
-class TaskItemSubmenuItem {
-  final Widget? label;
-  final Widget? icon;
-  final void Function() onPressed;
 
-  TaskItemSubmenuItem({this.label, this.icon, required this.onPressed});
-}
 
 class HomeTaskItem extends HookConsumerWidget {
   const HomeTaskItem({super.key});
@@ -23,16 +19,6 @@ class HomeTaskItem extends HookConsumerWidget {
     final task = ref.watch(currentTask);
 
     bool isCompleted = task.completed;
-
-    List<TaskItemSubmenuItem> submenuItemList = [
-      TaskItemSubmenuItem(
-        label: Text(style: TextStyle(color: dangerColour), 'Delete'),
-        icon: Icon(color: dangerColour, Icons.delete),
-        onPressed: () {
-          ref.read(taskListProvider.notifier).deleteTaskById(task.id);
-        },
-      ),
-    ];
 
     // key here to update state of submenu button to prevent bug when opening dialog
     // or navigating away that causes the button to remain focused and reopen menu
@@ -103,6 +89,7 @@ class HomeTaskItem extends HookConsumerWidget {
                   ),
                 ],
               ),
+              if(task.completed) Text('Completed at ${task.completedOn!.toRenderedDate()}', style: TextStyle(fontSize: 14),)
             ],
           ),
         ),
@@ -124,7 +111,7 @@ class HomeTaskItem extends HookConsumerWidget {
             },
             menuStyle: MenuStyle(alignment: Alignment.bottomLeft),
             menuChildren: [
-              for (final menuItem in submenuItemList)
+              for (final menuItem in submenuItemList(ref, context, task))
                 MenuItemButton(
                   onPressed: menuItem.onPressed,
                   leadingIcon: menuItem.icon,
