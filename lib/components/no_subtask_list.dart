@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'no_attribute_text.dart';
-
 class NoSubtaskList extends StatelessWidget {
   const NoSubtaskList({super.key, required this.onAddSubtask});
 
