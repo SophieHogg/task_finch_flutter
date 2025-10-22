@@ -4,7 +4,9 @@ Task Finch is a task todo list application with infinite nesting.
 
 ![The Task Finch itself](./docs/task_finch.jpg)
 
-[Progress Update with Screenshots](/docs/progress_20_10_25/Progress_20_10_25.md)
+[Progress Update - 23/10/25](/docs/progress_23_10_25/Progress_23_10_25.md)
+
+[Progress Update - 20/10/25](/docs/progress_20_10_25/Progress_20_10_25.md)
 
 --- 
 
