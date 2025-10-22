@@ -51,48 +51,85 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                     child: Column(
                       spacing: 16.0,
                       children: [
-                        TextFormField(
-                          controller: titleController,
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          decoration: const InputDecoration(
-                            label: const Row(
-                              spacing: 4,
-                              mainAxisSize: MainAxisSize.min,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          spacing: 4.0,
+                          children: [
+                            Row(
                               children: [
-                                const Text('Title'),
-                                const Text(
+                                Text(
+                                  'Title ',
+                                  style: TextStyle(fontWeight: FontWeight.w700),
+                                ),
+                                Text(
                                   '*',
-                                  style: TextStyle(color: Colors.red),
+                                  style: TextStyle(fontWeight: FontWeight.w700, color: dangerColour),
                                 ),
                               ],
                             ),
-                          ),
-                          validator: (String? value) {
-                            if ((value == null || value.trim() == ''))
-                              return 'Title is required';
-                            else if (value.length > 50)
-                              return 'Max length: 50 characters. Current length: ${value.length}';
-                            else
-                              return null;
-                          },
+                            TextFormField(
+                              controller: titleController,
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              decoration: const InputDecoration(),
+                              validator: (String? value) {
+                                if ((value == null || value.trim() == ''))
+                                  return 'Title is required';
+                                else if (value.length > 50)
+                                  return 'Max length: 50 characters. Current length: ${value.length}';
+                                else
+                                  return null;
+                              },
+                            ),
+                          ],
                         ),
 
-                        TextFormField(
-                          controller: descriptionController,
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          decoration: const InputDecoration(
-                            labelText: 'Description',
-                          ),
-                          minLines: 3,
-                          maxLines: 5,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          spacing: 4.0,
+                          children: [
+                            Text(
+                              'Description',
+                              style: TextStyle(fontWeight: FontWeight.w700),
+                            ),
+                            TextFormField(
+                              controller: descriptionController,
+                              autovalidateMode: AutovalidateMode.onUserInteraction,
+
+                              minLines: 3,
+                              maxLines: 5,
+                            ),
+                          ],
                         ),
-                        PrioritySelector(
-                          priority: priority,
-                          onChangePriority: (newPriority) => priority = newPriority,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          spacing: 4.0,
+                          children: [
+                            Text(
+                              'Priority',
+                              style: TextStyle(fontWeight: FontWeight.w700),
+                            ),
+                            PrioritySelector(
+                              priority: priority,
+                              onChangePriority:
+                                  (newPriority) => priority = newPriority,
+                            ),
+                          ],
                         ),
-                        ParentSelector(
-                          onChangeParent: (newParent) => parent = newParent,
-                          initialParent: parent,
+                        Column(
+
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          spacing: 4.0,
+                          children: [
+                            Text(
+                              'Parent task',
+                              style: TextStyle(fontWeight: FontWeight.w700),
+                            ),
+                            ParentSelector(
+                              onChangeParent: (newParent) => parent = newParent,
+                              initialParent: parent,
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -112,7 +149,9 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                     );
                   }
                 },
-                style: ElevatedButton.styleFrom(backgroundColor: positiveColour),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: positiveColour,
+                ),
                 child: Row(
                   spacing: 8.0,
                   mainAxisAlignment: MainAxisAlignment.center,

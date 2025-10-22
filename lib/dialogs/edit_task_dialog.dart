@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:task_finch/components/base_nav.dart';
-import 'package:task_finch/components/no_attribute_text.dart';
-import 'package:task_finch/components/no_subtask_list.dart';
 import 'package:task_finch/components/parent_selector.dart';
-import 'package:task_finch/components/priority_pill.dart';
 import 'package:task_finch/components/priority_selector.dart';
-import 'package:task_finch/components/task_inkwell.dart';
 import 'package:task_finch/main.dart';
 import 'package:task_finch/task_provider.dart';
 
@@ -48,14 +43,14 @@ class EditTaskDialog extends HookConsumerWidget {
     final description = task.description?.trim() ?? '';
     final descriptionController = useTextEditingController(text: description);
 
-    final subtaskList = ref.watch(subtasksForTaskId(task.id));
+    // final subtaskList = ref.watch(subtasksForTaskId(task.id));
     final parent = _parent(task.parentId, ref);
     final parentValue = parent?.value;
     final titleHasText = editedText.text.isNotEmpty;
     final titleTooLong = editedText.text.length > 50;
     final disableSubmit = !titleHasText && !titleTooLong;
 
-    final subtaskListLength = subtaskList.value?.length ?? 0;
+    // final subtaskListLength = subtaskList.value?.length ?? 0;
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit Task ${task.rId}'),
@@ -167,7 +162,6 @@ class EditTaskDialog extends HookConsumerWidget {
                     ),
                 ],
               ),
-              ElevatedButton(onPressed: null, child: Text('hello'))
             ],
           ),
         ),

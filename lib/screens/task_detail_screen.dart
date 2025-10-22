@@ -4,17 +4,12 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:task_finch/components/base_nav.dart';
 import 'package:task_finch/components/no_attribute_text.dart';
 import 'package:task_finch/components/no_subtask_list.dart';
-import 'package:task_finch/components/parent_selector.dart';
-import 'package:task_finch/components/priority_pill.dart';
-import 'package:task_finch/components/priority_selector.dart';
 import 'package:task_finch/components/task_inkwell.dart';
 import 'package:task_finch/components/task_list.dart';
 import 'package:task_finch/main.dart';
-import 'package:task_finch/task_provider.dart';
 import 'package:task_finch/theming/constants.dart';
 
 import '../components/priority_wide_indicator.dart';
-import '../components/task_item.dart';
 import '../data/database.dart';
 import '../dialogs/add_task_dialog.dart';
 import '../dialogs/edit_task_dialog.dart';
@@ -66,7 +61,6 @@ class TaskDetailScreen extends HookConsumerWidget {
     final task = ref.watch(taskById(taskId)).value;
     if (task == null) return SizedBox.shrink();
 
-    final priority = useState<Priority>(task.priority);
 
     final taskTitle = task.title;
     final description = task.description?.trim() ?? '';
@@ -74,9 +68,6 @@ class TaskDetailScreen extends HookConsumerWidget {
     final subtaskList = ref.watch(subtasksForTaskId(task.id));
     final parent = _parent(task.parentId, ref);
     final parentValue = parent?.value;
-    final titleHasText = taskTitle.isNotEmpty;
-    final titleTooLong = taskTitle.length > 50;
-    final disableSubmit = !titleHasText && !titleTooLong;
 
     final subtaskListLength = subtaskList.value?.length ?? 0;
     return Scaffold(
