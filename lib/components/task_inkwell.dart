@@ -8,34 +8,51 @@ import 'package:task_finch/data/database.dart';
 import '../screens/task_detail_screen.dart';
 
 class TaskInkwell extends StatelessWidget {
-  const TaskInkwell({super.key, this.task, this.placeholder = 'No task'});
+  const TaskInkwell({
+    super.key,
+    this.task,
+    this.placeholder = 'No parent task assigned',
+  });
 
   final Task? task;
   final String placeholder;
+
   @override
   Widget build(BuildContext context) {
     if (task case final taskItem?)
-      return InkWell(
-        borderRadius: BorderRadius.all(Radius.circular(100)),
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => TaskDetailScreen(task: taskItem),
+      return Row(
+        children: [
+          Text('Parent task: '),
+
+          InkWell(
+            borderRadius: BorderRadius.all(Radius.circular(100)),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => TaskDetailScreen(task: taskItem),
+                ),
+              );
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                border: BoxBorder.all(color: Colors.grey),
+                borderRadius: BorderRadius.all(Radius.circular(100)),
+              ),
+              child: Padding(
+                // Adjust for visual weight of priority circle
+                padding: const EdgeInsets.fromLTRB(10, 4, 16, 4),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 8,
+                  children: [
+                    Text(taskItem.title),
+                    PriorityCircle(priority: taskItem.priority),
+                  ],
+                ),
+              ),
             ),
-          );
-        },
-        child: Padding(
-          // Adjust for visual weight of priority circle
-          padding: const EdgeInsets.fromLTRB(10, 4, 16, 4),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            spacing: 8,
-            children: [
-              PriorityCircle(priority: taskItem.priority),
-              Text(taskItem.title),
-            ],
           ),
-        ),
+        ],
       );
     else
       return NoAttributeText(text: placeholder);

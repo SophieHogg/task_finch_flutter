@@ -7,7 +7,7 @@ class NoAttributeText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
         text,
-      style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)
+      style: TextStyle( color: Colors.grey)
     );
   }
 }

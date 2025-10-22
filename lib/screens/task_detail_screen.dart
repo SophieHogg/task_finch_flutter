@@ -80,9 +80,7 @@ class TaskDetailScreen extends HookConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title:
-            isEditing.value == true
-                ? Text(titleController.text)
-                : Text(editedText.text),
+            Text('Task Details')
       ),
       body: SingleChildScrollView(
         child: SafeArea(
@@ -91,6 +89,21 @@ class TaskDetailScreen extends HookConsumerWidget {
             spacing: 16.0,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              if (parent != null)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 4.0,
+                  children: [
+                    isEditing.value == true
+                        ? ParentSelector(
+                      taskId: task.id,
+                      initialParent: parent.value,
+                      onChangeParent:
+                          (newParent) => parent.value = newParent,
+                    )
+                        : TaskInkwell(task: parentValue),
+                  ],
+                ),
               if (isEditing.value)
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,7 +126,7 @@ class TaskDetailScreen extends HookConsumerWidget {
                       controller: titleController,
                     ),
                   ],
-                ),
+                ) else Text(editedText.text, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 30),),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: 4.0,
@@ -151,26 +164,7 @@ class TaskDetailScreen extends HookConsumerWidget {
                       : PriorityPill(priority: priority.value),
                 ],
               ),
-              if (parent != null)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 4.0,
-                  children: [
-                    if (!isEditing.value)
-                      Text(
-                        'Parent Task:',
-                        style: TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                    isEditing.value == true
-                        ? ParentSelector(
-                          taskId: task.id,
-                          initialParent: parent.value,
-                          onChangeParent:
-                              (newParent) => parent.value = newParent,
-                        )
-                        : TaskInkwell(task: parentValue),
-                  ],
-                ),
+
               Column(
                 spacing: 4,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
