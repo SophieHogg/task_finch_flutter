@@ -12,7 +12,7 @@ class PriorityPill extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.center,
-      width: 80,
+      width: 75,
       decoration: BoxDecoration(gradient: priorityGradients[priority], borderRadius: BorderRadius.circular(20)),
         padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 10.0),
         child: Text(priority.name.toSentenceCase(), style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700))
