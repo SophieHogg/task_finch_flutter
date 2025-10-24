@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:task_finch/helpers/text_helpers.dart';
 import 'package:task_finch/theming/business_logic_theming.dart';
+
 import '../data/database.dart';
 
 typedef PriorityEntry = DropdownMenuEntry<Priority>;

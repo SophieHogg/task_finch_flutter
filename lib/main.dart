@@ -96,7 +96,7 @@ class Home extends HookConsumerWidget {
       appBar: AppBar(
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: CircleIcon()
+          child: CircleIcon(),
         ),
 
         title: Text('List Finch'),
