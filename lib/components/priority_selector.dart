@@ -17,6 +17,9 @@ class PrioritySelector extends HookWidget {
 
   final Priority priority;
   final void Function(Priority priority) onChangePriority;
+  // ease out back jumps past the edges too far
+  // this adjusts the default values: 'd' from 1.275 to 1.10
+  static const _betterEaseOutBack = Cubic(0.175, 0.885, 0.32, 1.10);
 
   @override
   Widget build(BuildContext context) {
@@ -27,46 +30,62 @@ class PrioritySelector extends HookWidget {
         gradient: LinearGradient(colors: fullGradient),
         borderRadius: BorderRadius.circular(100),
       ),
-      child: Row(
-        children:
-            [
-              for (final priorityGradient in priorityGradients.entries)
-                Expanded(
-                  child: Container(
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: priorityGradient.key == priority ? Colors.black.withAlpha(40) : Colors.transparent,
-                      gradient:
-                          priority == priorityGradient.key
-                              ? priorityGradient.value
-                              : null,
-                      borderRadius: BorderRadius.circular(100),
-                      border: Border.all(
-                        color:
-                            priority == priorityGradient.key
-                                ? Colors.white
-                                : Colors.transparent,
-                        width: 3,
-                      ),
-                    ),
-                    child: InkWell(
-                      onTap: () => this.onChangePriority(priorityGradient.key),
-                      child: Center(
-                        child: Text(
-                          priorityGradient.key.name.toSentenceCase(),
-                          style: TextStyle(
-                            color:
+      child: Material(
+        color: Colors.transparent,
+        child: Stack(
+          children: [
+            AnimatedSlide(
+              offset: Offset(2 - priority.index.toDouble(), 0),
+              duration: Duration(milliseconds: 300),
+              curve: _betterEaseOutBack,
+              child: FractionallySizedBox(
+                widthFactor: 1/3,
+                child: Container(
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withAlpha(40),
+                    borderRadius: BorderRadius.circular(100),
+                    border: Border.all(color: Colors.white, width: 3),
+                  ),
+                ),
+              ),
+            ),
+            Row(
+              children:
+                  [
+                    for (final priorityGradient in priorityGradients.entries)
+                      Expanded(
+                        child: InkWell(
+                          splashColor: Colors.white.withAlpha(50),
+                          borderRadius: BorderRadius.circular(100),
+                          onTap:
+                              () => this.onChangePriority(priorityGradient.key),
+                          child: Center(
+                            child: AnimatedDefaultTextStyle(
+                              style: TextStyle(
+                                color:
                                 priorityGradient.key == priority
                                     ? Colors.white
                                     : Colors.black,
-                            fontWeight: FontWeight.w700,
+                              ),
+                              duration: Duration(milliseconds: 200),
+                              child: Text(
+                                priorityGradient.key.name.toSentenceCase(),
+                                style: TextStyle(
+
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                ),
-            ].reversed.toList(),
+                  ].reversed.toList(),
+            ),
+
+          ],
+
+        ),
       ),
     );
     return DropdownMenu<Priority>(

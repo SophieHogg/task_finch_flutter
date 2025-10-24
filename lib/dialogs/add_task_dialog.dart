@@ -121,7 +121,6 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                                 });
                               },
                             ),
-                            Text('${priority}'),
                           ],
                         ),
                         Column(
