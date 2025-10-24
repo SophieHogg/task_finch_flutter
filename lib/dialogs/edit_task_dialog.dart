@@ -51,6 +51,21 @@ class EditTaskDialog extends HookConsumerWidget {
     final titleTooLong = editedText.text.length > 50;
     final disableSubmit = !titleHasText && !titleTooLong;
 
+    onSave() {
+      ref
+          .read(taskListProvider.notifier)
+          .editTaskById(
+            task.id,
+            TaskAddRequest(
+              title: titleController.text,
+              description: descriptionController.text,
+              priority: priority.value,
+              parentId: parentValue?.id,
+            ),
+          );
+      Navigator.pop(context);
+    }
+
     // final subtaskListLength = subtaskList.value?.length ?? 0;
     return Scaffold(
       backgroundColor: baseColour,
@@ -68,23 +83,7 @@ class EditTaskDialog extends HookConsumerWidget {
             child: Opacity(
               opacity: !disableSubmit || !isEditing.value ? 1 : 0.6,
               child: IconButton(
-                onPressed:
-                    !disableSubmit
-                        ? () {
-                          ref
-                              .read(taskListProvider.notifier)
-                              .editTaskById(
-                                task.id,
-                                TaskAddRequest(
-                                  title: titleController.text,
-                                  description: descriptionController.text,
-                                  priority: priority.value,
-                                  parentId: parentValue?.id,
-                                ),
-                              );
-                          Navigator.pop(context);
-                        }
-                        : null,
+                onPressed: !disableSubmit ? () => onSave() : null,
                 icon: Icon(color: Colors.white, size: 30, Icons.check),
               ),
             ),
@@ -96,86 +95,141 @@ class EditTaskDialog extends HookConsumerWidget {
         child: SizedBox.expand(
           child: Container(
             decoration: BoxDecoration(
-            color: lightBackgroundColour,
-              borderRadius: BorderRadius.circular(20)
+              color: lightBackgroundColour,
+              borderRadius: BorderRadius.circular(20),
             ),
-          
-            child: SingleChildScrollView(
-              child: SafeArea(
-                minimum: EdgeInsets.all(16.0),
-                child: Column(
-                  spacing: 16.0,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 4.0,
-                      children: [
-                        Text('Title:', style: TextStyle(fontWeight: FontWeight.w700)),
-                        TextFormField(
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          validator: (String? value) {
-                            if ((value == null || value.trim() == ''))
-                              return 'Title is required';
-                            else if (value.length > 50)
-                              return 'Max length: 50 characters. Current length: ${value.length}';
-                            else
-                              return null;
+
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 16.0,
+                horizontal: 24.0,
+              ),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: SafeArea(
+                        child: Column(
+                          spacing: 16.0,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              spacing: 4.0,
+                              children: [
+                                Text(
+                                  'Title:',
+                                  style: TextStyle(fontWeight: FontWeight.w700),
+                                ),
+                                TextFormField(
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  validator: (String? value) {
+                                    if ((value == null || value.trim() == ''))
+                                      return 'Title is required';
+                                    else if (value.length > 50)
+                                      return 'Max length: 50 characters. Current length: ${value.length}';
+                                    else
+                                      return null;
+                                  },
+                                  controller: titleController,
+                                ),
+                              ],
+                            ),
+
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              spacing: 4.0,
+                              children: [
+                                Text(
+                                  'Description:',
+                                  style: TextStyle(fontWeight: FontWeight.w700),
+                                ),
+                                TextField(
+                                  minLines: 3,
+                                  maxLines: 10,
+                                  controller: descriptionController,
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              spacing: 4.0,
+                              children: [
+                                Text(
+                                  'Priority:',
+                                  style: TextStyle(fontWeight: FontWeight.w700),
+                                ),
+                                PrioritySelector(
+                                  priority: priority.value,
+                                  onChangePriority:
+                                      (newPriority) =>
+                                          priority.value = newPriority,
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              spacing: 4.0,
+                              children: [
+                                Text(
+                                  'Parent task:',
+                                  style: TextStyle(fontWeight: FontWeight.w700),
+                                ),
+                                if (parent != null)
+                                  ParentSelector(
+                                    taskId: task.id,
+                                    initialParent: parent.value,
+                                    onChangeParent:
+                                        (newParent) => parent.value = newParent,
+                                  ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Row(
+                    spacing: 8,
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
                           },
-                          controller: titleController,
-                        ),
-                      ],
-                    ),
-          
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 4.0,
-                      children: [
-                        Text(
-                          'Description:',
-                          style: TextStyle(fontWeight: FontWeight.w700),
-                        ),
-                        TextField(
-                          minLines: 3,
-                          maxLines: 10,
-                          controller: descriptionController,
-                        ),
-                      ],
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 4.0,
-                      children: [
-                        Text(
-                          'Priority:',
-                          style: TextStyle(fontWeight: FontWeight.w700),
-                        ),
-                        PrioritySelector(
-                          priority: priority.value,
-                          onChangePriority:
-                              (newPriority) => priority.value = newPriority,
-                        ),
-                      ],
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 4.0,
-                      children: [
-                        Text(
-                          'Parent task:',
-                          style: TextStyle(fontWeight: FontWeight.w700),
-                        ),
-                        if (parent != null)
-                          ParentSelector(
-                            taskId: task.id,
-                            initialParent: parent.value,
-                            onChangeParent: (newParent) => parent.value = newParent,
+                          style: ElevatedButton.styleFrom(
+                            side: BorderSide(color: baseColour, width: 2),
                           ),
-                      ],
-                    ),
-                  ],
-                ),
+                          child: Text(
+                            'Cancel',
+                            style: TextStyle(color: baseColour),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: !disableSubmit ? () => onSave() : null,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: baseColour,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            spacing: 8,
+                            children: [
+                              Icon(Icons.check, color: Colors.white),
+                              Text(
+                                'Save',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),

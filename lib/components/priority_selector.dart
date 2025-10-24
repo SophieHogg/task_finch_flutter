@@ -25,7 +25,7 @@ class PrioritySelector extends HookWidget {
   Widget build(BuildContext context) {
     final _lastSelection = useState<Priority>(priority);
     return Container(
-      height: 50,
+      height: 40,
       decoration: BoxDecoration(
         gradient: LinearGradient(colors: fullGradient),
         borderRadius: BorderRadius.circular(100),
@@ -72,7 +72,7 @@ class PrioritySelector extends HookWidget {
                               child: Text(
                                 priorityGradient.key.name.toSentenceCase(),
                                 style: TextStyle(
-
+                                  fontSize: 16,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),

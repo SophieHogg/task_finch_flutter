@@ -29,9 +29,10 @@ class PriorityIndicator extends StatelessWidget {
               for (final value in Priority.values.reversed)
                 Expanded(
                   child: Container(
+                    height: 25,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: priority == value ? Colors.black.withAlpha(100) : Colors.white.withAlpha(20),
+                      color: priority == value ? Colors.black.withAlpha(100) : Colors.white.withAlpha(10),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(

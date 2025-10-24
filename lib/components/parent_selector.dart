@@ -8,7 +8,10 @@ import 'package:task_finch/theming/constants.dart';
 import '../data/database.dart';
 import '../task_get_provider.dart';
 
-final possibleParentProvider = Provider.family<List<Task>, String?>((ref, taskId) {
+final possibleParentProvider = Provider.family<List<Task>, String?>((
+  ref,
+  taskId,
+) {
   final tasks = ref.watch(tasksExceptForId(taskId));
   // ensure the incomplete tasks are at the top
   final incompleteTasks = tasks.value
@@ -24,9 +27,14 @@ final possibleParentProvider = Provider.family<List<Task>, String?>((ref, taskId
 typedef TaskEntry = DropdownMenuEntry<Task?>;
 
 class ParentSelector extends HookConsumerWidget {
-  ParentSelector({super.key, required this.onChangeParent, this.initialParent, this.taskId});
+  ParentSelector({
+    super.key,
+    required this.onChangeParent,
+    this.initialParent,
+    this.taskId,
+  });
 
-  final void Function (Task? parent) onChangeParent;
+  final void Function(Task? parent) onChangeParent;
   final Task? initialParent;
   final String? taskId;
   final Map<Priority, Color> priorityColours = {
@@ -34,6 +42,7 @@ class ParentSelector extends HookConsumerWidget {
     Priority.medium: Colors.orange,
     Priority.low: Colors.green,
   };
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedTask = useState<Task?>(initialParent);
@@ -41,13 +50,14 @@ class ParentSelector extends HookConsumerWidget {
     final filteredTaskList = taskList.whereNot((task) => task.id == taskId);
     final taskController = useTextEditingController(text: initialParent?.title);
     return DropdownMenu<Task?>(
-
-
       // Disable the input if there are no tasks to be selected and show hint text
       enabled: filteredTaskList.length > 0,
       hintText: filteredTaskList.length == 0 ? 'No available tasks' : '',
       initialSelection: selectedTask.value,
       controller: taskController,
+      textStyle: TextStyle(
+        color: selectedTask.value == null ? Colors.grey : Colors.black,
+      ),
       trailingIcon: Icon(Icons.keyboard_arrow_down),
       selectedTrailingIcon: Icon(Icons.keyboard_arrow_up),
       // The default requestFocusOnTap value depends on the platform.
@@ -61,26 +71,44 @@ class ParentSelector extends HookConsumerWidget {
       },
       expandedInsets: EdgeInsets.zero,
       enableFilter: true,
-      leadingIcon: PriorityCircle(priority: selectedTask.value?.priority, size: 16),
+      leadingIcon: PriorityCircle(
+        priority: selectedTask.value?.priority,
+        size: 16,
+      ),
       inputDecorationTheme: InputDecorationTheme.of(context),
       menuStyle: MenuStyle(
         backgroundColor: WidgetStatePropertyAll(lightTopColour),
-        shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
         maximumSize: WidgetStatePropertyAll(Size.infinite),
       ),
       dropdownMenuEntries: [
         TaskEntry(
-            value: null,
-            label: 'No parent',
-            leadingIcon: PriorityCircle(priority: null)
+          value: null,
+          labelWidget: Text(
+            'No parent',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+          label: 'No parent',
+          leadingIcon: PriorityCircle(priority: null),
         ),
         for (final task in filteredTaskList)
           TaskEntry(
             value: task,
             label: task.title,
-            style: ButtonStyle(textStyle: WidgetStatePropertyAll(TextStyle(fontSize: 16 ))),
+            style: ButtonStyle(
+              textStyle: WidgetStatePropertyAll(TextStyle(fontSize: 16)),
+            ),
             leadingIcon: PriorityCircle(priority: task.priority),
-            trailingIcon: Text('#${task.rId}', style: TextStyle(color: Colors.grey, fontSize: 12),)
+            trailingIcon: Text(
+              '#${task.rId}',
+              style: TextStyle(color: Colors.grey, fontSize: 12),
+            ),
           ),
       ],
     );
