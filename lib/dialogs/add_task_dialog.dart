@@ -63,7 +63,10 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                                 ),
                                 Text(
                                   '*',
-                                  style: TextStyle(fontWeight: FontWeight.w700, color: dangerColour),
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    color: dangerColour,
+                                  ),
                                 ),
                               ],
                             ),
@@ -94,7 +97,8 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                             ),
                             TextFormField(
                               controller: descriptionController,
-                              autovalidateMode: AutovalidateMode.onUserInteraction,
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
 
                               minLines: 3,
                               maxLines: 5,
@@ -111,13 +115,16 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                             ),
                             PrioritySelector(
                               priority: priority,
-                              onChangePriority:
-                                  (newPriority) => priority = newPriority,
+                              onChangePriority: (newPriority) {
+                                setState(() {
+                                  priority = newPriority;
+                                });
+                              },
                             ),
+                            Text('${priority}'),
                           ],
                         ),
                         Column(
-
                           crossAxisAlignment: CrossAxisAlignment.start,
                           spacing: 4.0,
                           children: [
