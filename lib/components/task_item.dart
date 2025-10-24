@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:task_finch/components/children_badge.dart';
 import 'package:task_finch/components/priority_pill.dart';
 import 'package:task_finch/screens/task_detail_screen.dart';
 
 import '../data/database.dart';
 import '../dialogs/delete_task_dialog.dart';
 import '../main.dart';
+import '../task_get_provider.dart';
 import '../theming/constants.dart';
 
 class TaskItemSubmenuItem {
@@ -17,7 +19,10 @@ class TaskItemSubmenuItem {
   TaskItemSubmenuItem({this.label, this.icon, required this.onPressed});
 }
 
-void onDeleteTask(WidgetRef ref, BuildContext context, Task task) {
+void onDeleteTask(WidgetRef ref, BuildContext context, Task task) async {
+
+  final children = ref.read(subtasksForTaskId(task.id)).value;
+
   showDialog(
     context: context,
     builder: (context) {
@@ -28,6 +33,7 @@ void onDeleteTask(WidgetRef ref, BuildContext context, Task task) {
             ref.read(taskListProvider.notifier).deleteTaskById(task.id);
             Navigator.pop(context);
           },
+          children: children?.length ?? 0,
           onCancel: () => Navigator.pop(context),
         ),
       );
@@ -51,7 +57,10 @@ class TaskItem extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+
+
     final task = ref.watch(currentTask);
+    final children = ref.watch(subtasksForTaskId(task.id)).value;
 
 
     bool isCompleted = task.completed;
@@ -65,6 +74,9 @@ class TaskItem extends HookConsumerWidget {
       elevation: 6,
       child: ListTile(
         visualDensity: VisualDensity.compact,
+        minLeadingWidth: 10,
+        contentPadding: EdgeInsets.symmetric(horizontal: 2),
+
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
@@ -96,13 +108,21 @@ class TaskItem extends HookConsumerWidget {
                     alignment: Alignment.centerLeft,
                     child: PriorityPill(priority: task.priority),
                   ),
+                  if(children != null && children.length > 0)
+                    ChildrenBadge(childrenCount: children.length),
                   Text(
                     'Task #${task.rId}',
                     style: TextStyle(color: Colors.grey),
                   ),
                 ],
               ),
-              Text(task.title, maxLines: 3),
+              Row(
+                spacing: 8,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(task.title, maxLines: 3),
+                ],
+              ),
             ],
           ),
         ),

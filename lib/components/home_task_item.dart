@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:task_finch/components/children_badge.dart';
 import 'package:task_finch/components/priority_pill.dart';
 import 'package:task_finch/components/task_item.dart';
 import 'package:task_finch/helpers/date_helpers.dart';
 import 'package:task_finch/screens/task_detail_screen.dart';
 
 import '../main.dart';
+import '../task_get_provider.dart';
 import '../theming/constants.dart';
 
 
@@ -17,6 +19,9 @@ class HomeTaskItem extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final task = ref.watch(currentTask);
+
+    final children = ref.watch(subtasksForTaskId(task.id)).value;
+
 
     bool isCompleted = task.completed;
 
@@ -63,6 +68,8 @@ class HomeTaskItem extends HookConsumerWidget {
                     alignment: Alignment.centerLeft,
                     child: PriorityPill(priority: task.priority),
                   ),
+                  if(children != null && children.length > 0)
+                    ChildrenBadge(childrenCount: children.length),
                   Text(
                     'Task #${task.rId}',
                     style: TextStyle(color: Colors.grey),
@@ -71,6 +78,8 @@ class HomeTaskItem extends HookConsumerWidget {
               ),
 
               Row(
+                spacing: 8,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Flexible(
                     child: Tooltip(
@@ -87,6 +96,7 @@ class HomeTaskItem extends HookConsumerWidget {
                       ),
                     ),
                   ),
+
                 ],
               ),
               if(task.completed) Text('Completed at ${task.completedOn!.toRenderedDate()}', style: TextStyle(fontSize: 14),)
