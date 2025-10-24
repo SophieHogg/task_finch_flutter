@@ -5,6 +5,7 @@ import 'package:task_finch/components/parent_selector.dart';
 import 'package:task_finch/components/priority_selector.dart';
 import 'package:task_finch/main.dart';
 import 'package:task_finch/task_provider.dart';
+import 'package:task_finch/theming/constants.dart';
 
 import '../data/database.dart';
 import '../task_get_provider.dart';
@@ -52,6 +53,8 @@ class EditTaskDialog extends HookConsumerWidget {
 
     // final subtaskListLength = subtaskList.value?.length ?? 0;
     return Scaffold(
+      backgroundColor: baseColour,
+
       appBar: AppBar(
         title: Text('Edit Task ${task.rId}'),
         actions: [
@@ -88,81 +91,93 @@ class EditTaskDialog extends HookConsumerWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: SafeArea(
-          minimum: EdgeInsets.all(16.0),
-          child: Column(
-            spacing: 16.0,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 4.0,
-                children: [
-                  Text('Title:', style: TextStyle(fontWeight: FontWeight.w700)),
-                  TextFormField(
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (String? value) {
-                      if ((value == null || value.trim() == ''))
-                        return 'Title is required';
-                      else if (value.length > 50)
-                        return 'Max length: 50 characters. Current length: ${value.length}';
-                      else
-                        return null;
-                    },
-                    controller: titleController,
-                  ),
-                ],
-              ),
-
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 4.0,
-                children: [
-                  Text(
-                    'Description:',
-                    style: TextStyle(fontWeight: FontWeight.w700),
-                  ),
-                  TextField(
-                    minLines: 3,
-                    maxLines: 10,
-                    controller: descriptionController,
-                  ),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 4.0,
-                children: [
-                  Text(
-                    'Priority:',
-                    style: TextStyle(fontWeight: FontWeight.w700),
-                  ),
-                  PrioritySelector(
-                    priority: priority.value,
-                    onChangePriority:
-                        (newPriority) => priority.value = newPriority,
-                  ),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 4.0,
-                children: [
-                  Text(
-                    'Parent task:',
-                    style: TextStyle(fontWeight: FontWeight.w700),
-                  ),
-                  if (parent != null)
-                    ParentSelector(
-                      taskId: task.id,
-                      initialParent: parent.value,
-                      onChangeParent: (newParent) => parent.value = newParent,
+      body: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 10, 10, 30),
+        child: SizedBox.expand(
+          child: Container(
+            decoration: BoxDecoration(
+            color: lightBackgroundColour,
+              borderRadius: BorderRadius.circular(20)
+            ),
+          
+            child: SingleChildScrollView(
+              child: SafeArea(
+                minimum: EdgeInsets.all(16.0),
+                child: Column(
+                  spacing: 16.0,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 4.0,
+                      children: [
+                        Text('Title:', style: TextStyle(fontWeight: FontWeight.w700)),
+                        TextFormField(
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          validator: (String? value) {
+                            if ((value == null || value.trim() == ''))
+                              return 'Title is required';
+                            else if (value.length > 50)
+                              return 'Max length: 50 characters. Current length: ${value.length}';
+                            else
+                              return null;
+                          },
+                          controller: titleController,
+                        ),
+                      ],
                     ),
-                ],
+          
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 4.0,
+                      children: [
+                        Text(
+                          'Description:',
+                          style: TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                        TextField(
+                          minLines: 3,
+                          maxLines: 10,
+                          controller: descriptionController,
+                        ),
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 4.0,
+                      children: [
+                        Text(
+                          'Priority:',
+                          style: TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                        PrioritySelector(
+                          priority: priority.value,
+                          onChangePriority:
+                              (newPriority) => priority.value = newPriority,
+                        ),
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 4.0,
+                      children: [
+                        Text(
+                          'Parent task:',
+                          style: TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                        if (parent != null)
+                          ParentSelector(
+                            taskId: task.id,
+                            initialParent: parent.value,
+                            onChangeParent: (newParent) => parent.value = newParent,
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ],
+            ),
           ),
         ),
       ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:task_finch/components/priority_circle.dart';
+import 'package:task_finch/theming/constants.dart';
 
 import '../data/database.dart';
 import '../task_get_provider.dart';
@@ -40,11 +41,15 @@ class ParentSelector extends HookConsumerWidget {
     final filteredTaskList = taskList.whereNot((task) => task.id == taskId);
     final taskController = useTextEditingController(text: initialParent?.title);
     return DropdownMenu<Task?>(
+
+
       // Disable the input if there are no tasks to be selected and show hint text
       enabled: filteredTaskList.length > 0,
       hintText: filteredTaskList.length == 0 ? 'No available tasks' : '',
       initialSelection: selectedTask.value,
       controller: taskController,
+      trailingIcon: Icon(Icons.keyboard_arrow_down),
+      selectedTrailingIcon: Icon(Icons.keyboard_arrow_up),
       // The default requestFocusOnTap value depends on the platform.
       // On mobile, it defaults to false, and on desktop, it defaults to true.
       // Setting this to true will trigger a focus request on the text field, and
@@ -56,8 +61,13 @@ class ParentSelector extends HookConsumerWidget {
       },
       expandedInsets: EdgeInsets.zero,
       enableFilter: true,
-      leadingIcon: PriorityCircle(priority: selectedTask.value?.priority),
+      leadingIcon: PriorityCircle(priority: selectedTask.value?.priority, size: 16),
       inputDecorationTheme: InputDecorationTheme.of(context),
+      menuStyle: MenuStyle(
+        backgroundColor: WidgetStatePropertyAll(lightTopColour),
+        shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+        maximumSize: WidgetStatePropertyAll(Size.infinite),
+      ),
       dropdownMenuEntries: [
         TaskEntry(
             value: null,
@@ -68,6 +78,7 @@ class ParentSelector extends HookConsumerWidget {
           TaskEntry(
             value: task,
             label: task.title,
+            style: ButtonStyle(textStyle: WidgetStatePropertyAll(TextStyle(fontSize: 16 ))),
             leadingIcon: PriorityCircle(priority: task.priority),
             trailingIcon: Text('#${task.rId}', style: TextStyle(color: Colors.grey, fontSize: 12),)
           ),

@@ -9,12 +9,14 @@ class DeleteTaskDialog extends StatelessWidget {
     required this.task,
     required this.onConfirm,
     required this.onCancel,
+    required this.children,
   });
 
   final void Function() onConfirm;
   final void Function() onCancel;
 
   final Task task;
+  final int children;
 
   @override
   Widget build(BuildContext context) {
@@ -34,42 +36,59 @@ class DeleteTaskDialog extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Delete Task', style: TextStyle(fontSize: 20)),
-                IconButton(onPressed: onCancel, icon: Icon(Icons.close), visualDensity: VisualDensity.compact,),
+                IconButton(
+                  onPressed: onCancel,
+                  icon: Icon(Icons.close),
+                  visualDensity: VisualDensity.compact,
+                ),
               ],
             ),
           ),
-          Text(
-            'Are you sure you want to delete "${task.title}" (Task #${task.rId})?',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          Text.rich(
+            TextSpan(
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+
+              children: [
+                TextSpan(text: 'Are you sure you want to delete "'),
+                TextSpan(
+                  text: task.title,
+                  style: TextStyle(fontWeight: FontWeight.w700),
+                ),
+                TextSpan(text: '"?'),
+                if (children > 0) TextSpan(text: " Its ${children} subtask"),
+                if (children > 1) TextSpan(text: 's'),
+                if(children > 0) TextSpan(text: ' will have no parent set.')
+              ],
+            ),
           ),
           Row(
+            spacing: 8,
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              ElevatedButton(
-                onPressed: onCancel,
-                style: ElevatedButton.styleFrom(
-                  side: BorderSide(color: baseColour, width: 2),
-                ),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: onCancel,
+                  style: ElevatedButton.styleFrom(
+                    side: BorderSide(color: baseColour, width: 2),
+                  ),
 
-                child: Row(
-                  spacing: 8,
-                  children: [
-                    Icon(Icons.arrow_back, color: baseColour),
-                    Text('Cancel'),
-                  ],
+                  child: Text('Cancel'),
                 ),
               ),
-              ElevatedButton(
-                onPressed: onConfirm,
-                style: ElevatedButton.styleFrom(
-                  side: BorderSide(color: dangerColour, width: 2),
-                ),
-                child: Row(
-                  spacing: 8,
-                  children: [
-                    Icon(Icons.delete_forever, color: dangerColour),
-                    Text('Delete', style: TextStyle(color: dangerColour)),
-                  ],
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: onConfirm,
+                  style: ElevatedButton.styleFrom(
+                    side: BorderSide(color: dangerColour, width: 2),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    spacing: 8,
+                    children: [
+                      Icon(Icons.delete_forever, color: dangerColour),
+                      Text('Delete', style: TextStyle(color: dangerColour)),
+                    ],
+                  ),
                 ),
               ),
             ],
