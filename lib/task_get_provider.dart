@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'data/database.dart';
@@ -20,5 +21,7 @@ final tasksExceptForId = FutureProvider.family<List<Task>, String?>((ref, id) as
 
 final subtasksForTaskId = FutureProvider.family<List<Task>, String>((ref, id) async {
   ref.watch(taskListProvider);
-  return await (database.select(database.tasks)..where((task) => task.parentId.isValue(id))).get();
+  return await (database.select(database.tasks)..where((task) => task.parentId.isValue(id))..orderBy([(t) => OrderingTerm(expression: t.completed)])
+  )
+      .get();
 });
