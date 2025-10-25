@@ -20,7 +20,7 @@ class HomeTaskItem extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final task = ref.watch(currentTask);
 
-    final children = ref.watch(subtasksForTaskId(task.id)).value;
+    final children = ref.watch(subtasksForTaskId(task.id)).value?.where((task) => task.completed == false);
 
 
     bool isCompleted = task.completed;

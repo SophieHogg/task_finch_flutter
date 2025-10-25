@@ -21,7 +21,7 @@ class TaskItemSubmenuItem {
 
 void onDeleteTask(WidgetRef ref, BuildContext context, Task task) async {
 
-  final children = ref.read(subtasksForTaskId(task.id)).value;
+  final children = ref.watch(subtasksForTaskId(task.id)).value?.where((task) => task.completed == false);
 
   showDialog(
     context: context,
