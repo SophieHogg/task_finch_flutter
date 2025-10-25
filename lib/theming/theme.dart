@@ -10,6 +10,7 @@ class TFTheme extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final existingTheme = ThemeData(
+      fontFamily: 'Ubuntu',
       colorScheme: ColorScheme.fromSeed(seedColor: baseColour),
     );
     return Theme(
@@ -26,7 +27,8 @@ class TFTheme extends StatelessWidget {
         scaffoldBackgroundColor: lightBackgroundColour,
         appBarTheme: existingTheme.appBarTheme.copyWith(
           backgroundColor: baseColour,
-          titleTextStyle: TextStyle(fontSize: 20, color: Colors.white),
+          // due to a bug in the appBar, font family also has to be declared separately here
+          titleTextStyle: TextStyle(fontSize: 20, color: Colors.white, fontFamily: 'Ubuntu'),
           iconTheme: IconThemeData(size: 20, color: Colors.white),
         ),
         inputDecorationTheme: existingTheme.inputDecorationTheme.copyWith(

@@ -6,6 +6,7 @@ environment:
   sdk: ^3.7.0
   flutter: ">=1.17.0"
 
+version: 1.0.0+1
 
 dependencies:
   drift: ^2.28.2
@@ -31,3 +32,9 @@ flutter:
   assets:
     - assets/
   uses-material-design: true
+  fonts:
+    - family: 'Ubuntu'
+      fonts:
+        - asset: fonts/Ubuntu-Regular.ttf
+        - asset: fonts/Ubuntu-Italic.ttf
+          style: italic
