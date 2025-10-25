@@ -93,18 +93,18 @@ class Home extends HookConsumerWidget {
     final tasks = ref.watch(filteredTasks);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
           child: CircleIcon(),
         ),
 
-        title: Text('List Finch'),
+        title: Text('Task Finch'),
       ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-
           child: Column(
             spacing: 8,
             children: [

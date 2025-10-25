@@ -35,6 +35,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: baseColour,
       appBar: AppBar(title: Text("New Task")),
       // bottomNavigationBar: ElevatedButton(onPressed: null, child: Text('h')),

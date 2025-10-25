@@ -69,7 +69,7 @@ class EditTaskDialog extends HookConsumerWidget {
     // final subtaskListLength = subtaskList.value?.length ?? 0;
     return Scaffold(
       backgroundColor: baseColour,
-
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text('Edit Task ${task.rId}'),
         actions: [
@@ -98,7 +98,6 @@ class EditTaskDialog extends HookConsumerWidget {
               color: lightBackgroundColour,
               borderRadius: BorderRadius.circular(20),
             ),
-
             child: Padding(
               padding: const EdgeInsets.symmetric(
                 vertical: 16.0,
