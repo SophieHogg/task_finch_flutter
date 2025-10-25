@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:task_finch/components/label_input.dart';
 import 'package:task_finch/components/parent_selector.dart';
 import 'package:task_finch/components/priority_selector.dart';
 import 'package:task_finch/main.dart';
@@ -113,77 +114,51 @@ class EditTaskDialog extends HookConsumerWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              spacing: 4.0,
-                              children: [
-                                Text(
-                                  'Title:',
-                                  style: TextStyle(fontWeight: FontWeight.w700),
-                                ),
-                                TextFormField(
-                                  autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
-                                  validator: (String? value) {
-                                    if ((value == null || value.trim() == ''))
-                                      return 'Title is required';
-                                    else if (value.length > 50)
-                                      return 'Max length: 50 characters. Current length: ${value.length}';
-                                    else
-                                      return null;
-                                  },
-                                  controller: titleController,
-                                ),
-                              ],
+                            LabelInput(
+                              label: 'Title:',
+                              field: TextFormField(
+                                autovalidateMode:
+                                    AutovalidateMode.onUserInteraction,
+                                validator: (String? value) {
+                                  if ((value == null || value.trim() == ''))
+                                    return 'Title is required';
+                                  else if (value.length > 50)
+                                    return 'Max length: 50 characters. Current length: ${value.length}';
+                                  else
+                                    return null;
+                                },
+                                controller: titleController,
+                              ),
                             ),
-
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              spacing: 4.0,
-                              children: [
-                                Text(
-                                  'Description:',
-                                  style: TextStyle(fontWeight: FontWeight.w700),
-                                ),
-                                TextField(
-                                  minLines: 3,
-                                  maxLines: 10,
-                                  controller: descriptionController,
-                                ),
-                              ],
+                            LabelInput(
+                              label: 'Description',
+                              field: TextField(
+                                minLines: 3,
+                                maxLines: 10,
+                                controller: descriptionController,
+                              ),
                             ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              spacing: 4.0,
-                              children: [
-                                Text(
-                                  'Priority:',
-                                  style: TextStyle(fontWeight: FontWeight.w700),
-                                ),
-                                PrioritySelector(
-                                  priority: priority.value,
-                                  onChangePriority:
-                                      (newPriority) =>
-                                          priority.value = newPriority,
-                                ),
-                              ],
+                            LabelInput(
+                              label: 'Priority',
+                              field: PrioritySelector(
+                                priority: priority.value,
+                                onChangePriority:
+                                    (newPriority) =>
+                                        priority.value = newPriority,
+                              ),
                             ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              spacing: 4.0,
-                              children: [
-                                Text(
-                                  'Parent task:',
-                                  style: TextStyle(fontWeight: FontWeight.w700),
-                                ),
-                                if (parent != null)
-                                  ParentSelector(
-                                    taskId: task.id,
-                                    initialParent: parent.value,
-                                    onChangeParent:
-                                        (newParent) => parent.value = newParent,
-                                  ),
-                              ],
+                            LabelInput(
+                              label: 'Parent task',
+                              field:
+                                  parent != null
+                                      ? ParentSelector(
+                                        taskId: task.id,
+                                        initialParent: parent.value,
+                                        onChangeParent:
+                                            (newParent) =>
+                                                parent.value = newParent,
+                                      )
+                                      : null,
                             ),
                           ],
                         ),
