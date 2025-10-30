@@ -50,6 +50,8 @@ class ParentSelector extends HookConsumerWidget {
     final filteredTaskList = taskList.whereNot((task) => task.id == taskId);
     final taskController = useTextEditingController(text: initialParent?.title);
     return DropdownMenu<Task?>(
+      
+      menuHeight: MediaQuery.sizeOf(context).height/2,
       // Disable the input if there are no tasks to be selected and show hint text
       enabled: filteredTaskList.length > 0,
       hintText: filteredTaskList.length == 0 ? 'No available tasks' : '',
@@ -77,6 +79,7 @@ class ParentSelector extends HookConsumerWidget {
       ),
       inputDecorationTheme: InputDecorationTheme.of(context),
       menuStyle: MenuStyle(
+        elevation: WidgetStatePropertyAll(6),
         backgroundColor: WidgetStatePropertyAll(lightTopColour),
         shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -102,7 +105,7 @@ class ParentSelector extends HookConsumerWidget {
             value: task,
             label: task.title,
             style: ButtonStyle(
-              textStyle: WidgetStatePropertyAll(TextStyle(fontSize: 16)),
+              textStyle: WidgetStateProperty.all(TextStyle(inherit: false, fontSize: 15)),
             ),
             leadingIcon: PriorityCircle(priority: task.priority),
             trailingIcon: Text(
