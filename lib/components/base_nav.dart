@@ -15,41 +15,33 @@ class NavItem {
 }
 
 class BaseNav extends StatelessWidget {
-  BaseNav({super.key, this.selectedIndex = null});
+  final void Function(int) onSelectIndex;
+
+  BaseNav({super.key, this.selectedIndex = null, required this.onSelectIndex});
 
   final int? selectedIndex;
-  final List<NavItem> navDestinations = [
-    NavItem(
-      icon: Icon(Icons.home_filled),
-      label: 'Home',
-      action:
-          (BuildContext context) => Navigator.popUntil(
-            context,
-            ModalRoute.withName(Navigator.defaultRouteName),
-          ),
-    ),
-    NavItem(
-      icon: Icon(Icons.check),
-      label: 'Completed',
-      action:
-          (BuildContext context) => Navigator.of(
-            context,
-          ).push(MaterialPageRoute(builder: (context) => CompletedScreen())),
-    ),
-    NavItem(
-      // SEARCH IS NOT CURRENTLY FUNCTIONAL
-      icon: Icon(Icons.search),
-      label: 'Search',
-      action:
-          (BuildContext context) => Navigator.popUntil(
-            context,
-            ModalRoute.withName(Navigator.defaultRouteName),
-          ),
-    ),
-  ];
 
   @override
   Widget build(BuildContext context) {
+    final List<NavItem> navDestinations = [
+      NavItem(
+        icon: Icon(Icons.home_filled),
+        label: 'Home',
+        action: (BuildContext context) => onSelectIndex(0),
+      ),
+      NavItem(
+        icon: Icon(Icons.check),
+        label: 'Completed',
+        action: (BuildContext context) => onSelectIndex(1),
+      ),
+      NavItem(
+        // SEARCH IS NOT CURRENTLY FUNCTIONAL
+        icon: Icon(Icons.search),
+        label: 'Search',
+        action: (BuildContext context) => onSelectIndex(2),
+      ),
+    ];
+
     return SafeArea(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -70,9 +62,7 @@ class BaseNav extends StatelessWidget {
                         ? Colors.black
                         : Colors.white,
                 onPressed:
-                    selectedIndex == null || selectedIndex != index
-                        ? () => navDestination.action(context)
-                        : (null),
+                    () => navDestination.action(context),
                 icon: navDestination.icon,
               ),
             ),

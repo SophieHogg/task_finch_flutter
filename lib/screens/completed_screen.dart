@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:task_finch/components/base_nav.dart';
 import 'package:task_finch/components/home_task_item.dart';
-import 'package:collection/collection.dart';
 import '../main.dart';
 import '../task_get_provider.dart';
 
@@ -18,7 +16,6 @@ class CompletedScreen extends HookConsumerWidget {
         [];
     return Scaffold(
       appBar: AppBar(title: Text('Completed Tasks')),
-      bottomNavigationBar: BaseNav(selectedIndex: 1),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(

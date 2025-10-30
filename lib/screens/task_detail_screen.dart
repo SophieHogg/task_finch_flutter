@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:task_finch/components/base_nav.dart';
 import 'package:task_finch/components/label_input.dart';
 import 'package:task_finch/components/no_attribute_text.dart';
 import 'package:task_finch/components/no_subtask_list.dart';
@@ -9,7 +8,6 @@ import 'package:task_finch/components/task_inkwell.dart';
 import 'package:task_finch/helpers/date_helpers.dart';
 import 'package:task_finch/main.dart';
 import 'package:task_finch/theming/constants.dart';
-import 'package:collection/collection.dart';
 import '../components/priority_wide_indicator.dart';
 import '../components/subtask_list.dart';
 import '../data/database.dart';
@@ -212,7 +210,6 @@ class TaskDetailScreen extends HookConsumerWidget {
           ),
         ),
       ),
-      bottomNavigationBar: BaseNav(),
     );
   }
 }
