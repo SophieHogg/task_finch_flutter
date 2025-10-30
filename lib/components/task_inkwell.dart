@@ -24,7 +24,7 @@ class TaskInkwell extends StatelessWidget {
         children: [
           Text('Parent task: '),
 
-          Expanded(
+          Flexible(
             child: InkWell(
               borderRadius: BorderRadius.all(Radius.circular(100)),
               onTap: () {

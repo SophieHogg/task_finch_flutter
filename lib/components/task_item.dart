@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:task_finch/components/children_badge.dart';
 import 'package:task_finch/components/priority_pill.dart';
+import 'package:task_finch/helpers/date_helpers.dart';
 import 'package:task_finch/screens/task_detail_screen.dart';
 
 import '../data/database.dart';
@@ -107,7 +108,7 @@ class TaskItem extends HookConsumerWidget {
           },
         ),
         title: Opacity(
-          opacity: task.completed ? 0.6 : 1,
+          opacity: task.completed ? 1 : 1,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 4,
@@ -130,11 +131,20 @@ class TaskItem extends HookConsumerWidget {
                   ),
                 ],
               ),
-              Row(
-                spacing: 8,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [Text(task.title, maxLines: 3)],
+              Opacity(
+                opacity: isCompleted ? 0.6 : 1,
+                child: Text(
+                  task.title,
+                  maxLines: 3,
+                  style: TextStyle(fontWeight: FontWeight.w700),
+                ),
               ),
+
+              if (task.completed)
+                Text(
+                  'Completed at ${task.completedOn!.toRenderedDate()}',
+                  style: TextStyle(fontSize: 13, color: Colors.grey),
+                ),
             ],
           ),
         ),

@@ -74,7 +74,7 @@ class Home extends HookConsumerWidget {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          padding: const EdgeInsets.all(8),
           child: Column(
             spacing: 8,
             children: [
