@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:task_finch/screens/completed_screen.dart';
 import 'package:task_finch/theming/constants.dart';
 
 class NavItem {

@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hooks_riverpod/legacy.dart';
@@ -9,7 +8,6 @@ import 'package:task_finch/dialogs/add_task_dialog.dart';
 import 'package:task_finch/screens/main_screen.dart';
 import 'package:task_finch/theming/constants.dart';
 
-import 'components/task_counter.dart';
 import 'task_provider.dart';
 import 'theming/theme.dart';
 

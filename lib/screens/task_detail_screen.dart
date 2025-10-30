@@ -8,6 +8,7 @@ import 'package:task_finch/components/task_inkwell.dart';
 import 'package:task_finch/helpers/date_helpers.dart';
 import 'package:task_finch/main.dart';
 import 'package:task_finch/theming/constants.dart';
+
 import '../components/priority_wide_indicator.dart';
 import '../components/subtask_list.dart';
 import '../data/database.dart';

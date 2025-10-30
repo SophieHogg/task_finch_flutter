@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:task_finch/components/base_nav.dart';
 import 'package:task_finch/main.dart';
 import 'package:task_finch/screens/completed_screen.dart';
@@ -11,7 +10,6 @@ class MainScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final selectedIndex = useState<int>(0);
-    final pageController = usePageController();
     final homeKey = useMemoized(() => GlobalKey<NavigatorState>());
     final completedKey = useMemoized(() => GlobalKey<NavigatorState>());
     final searchKey = useMemoized(() => GlobalKey<NavigatorState>());
