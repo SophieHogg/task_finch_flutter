@@ -9,6 +9,7 @@ import 'package:task_finch/data/database.dart';
 import 'package:task_finch/dialogs/add_task_dialog.dart';
 import 'package:task_finch/theming/constants.dart';
 
+import 'components/task_counter.dart';
 import 'task_provider.dart';
 import 'theming/theme.dart';
 
@@ -29,34 +30,6 @@ enum TaskListFilter { all, active, completed }
 
 final taskListFilter = StateProvider((_) => TaskListFilter.all);
 
-final uncompletedTasksCount = Provider<int>((ref) {
-  return ref
-          .watch(taskListProvider)
-          .value
-          ?.where((todo) => !todo.completed)
-          .length ??
-      0;
-});
-
-final filteredTasks = Provider<List<Task>>((ref) {
-  final filter = ref.watch(taskListFilter);
-  final tasks = ref.watch(taskListProvider);
-  switch (filter) {
-    case TaskListFilter.completed:
-      return tasks.value?.where((todo) => todo.completed).toList() ?? [];
-    case TaskListFilter.active:
-      return tasks.value?.where((todo) => !todo.completed).toList() ?? [];
-    case TaskListFilter.all:
-      // ensure the incomplete tasks are at the top
-      final incompleteTasks = tasks.value
-          ?.where((task) => !task.completed)
-          .sortedBy((task) => task.priority.index);
-      final completeTasks = tasks.value
-          ?.where((task) => task.completed)
-          .sortedBy((task) => task.priority.index);
-      return [...?incompleteTasks, ...?completeTasks];
-  }
-});
 late AppDatabase database;
 
 void main() async {
@@ -90,8 +63,7 @@ class Home extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tasks = ref.watch(filteredTasks);
-
+    final tasks = (ref.watch(taskListProvider).value?.where((task) => task.completed == false)) ?? [];
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -108,15 +80,13 @@ class Home extends HookConsumerWidget {
           child: Column(
             spacing: 8,
             children: [
-              const Toolbar(),
-              if (tasks.isNotEmpty) const Divider(height: 0),
               Column(
                 spacing: 8,
                 children: [
-                  for (var i = 0; i < tasks.length; i++) ...[
+                  for (final task in tasks) ...[
                     // if (i > 0) const Divider(height: 0),
                     ProviderScope(
-                      overrides: [currentTask.overrideWithValue(tasks[i])],
+                      overrides: [currentTask.overrideWithValue(task)],
                       child: const HomeTaskItem(),
                     ),
                   ],
@@ -156,80 +126,3 @@ final currentTask = Provider<Task>(
   (ref) => throw UnimplementedError(),
 );
 
-class Toolbar extends HookConsumerWidget {
-  const Toolbar({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final filter = ref.watch(taskListFilter);
-
-    Color? textColorFor(TaskListFilter value) {
-      return filter == value ? Colors.red : baseColour;
-    }
-
-    return Container(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Text(
-              '${ref.watch(uncompletedTasksCount)} item${ref.watch(uncompletedTasksCount) == 1 ? '' : 's'} left',
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          Tooltip(
-            key: allFilterKey,
-            message: 'All tasks',
-            child: TextButton(
-              onPressed:
-                  () =>
-                      ref.read(taskListFilter.notifier).state =
-                          TaskListFilter.all,
-              style: ButtonStyle(
-                visualDensity: VisualDensity.compact,
-                foregroundColor: WidgetStatePropertyAll(
-                  textColorFor(TaskListFilter.all),
-                ),
-              ),
-              child: const Text('All'),
-            ),
-          ),
-          Tooltip(
-            key: activeFilterKey,
-            message: 'Only uncompleted tasks',
-            child: TextButton(
-              onPressed:
-                  () =>
-                      ref.read(taskListFilter.notifier).state =
-                          TaskListFilter.active,
-              style: ButtonStyle(
-                visualDensity: VisualDensity.compact,
-                foregroundColor: WidgetStatePropertyAll(
-                  textColorFor(TaskListFilter.active),
-                ),
-              ),
-              child: const Text('Active'),
-            ),
-          ),
-          Tooltip(
-            key: completedFilterKey,
-            message: 'Only completed tasks',
-            child: TextButton(
-              onPressed:
-                  () =>
-                      ref.read(taskListFilter.notifier).state =
-                          TaskListFilter.completed,
-              style: ButtonStyle(
-                visualDensity: VisualDensity.compact,
-                foregroundColor: WidgetStatePropertyAll(
-                  textColorFor(TaskListFilter.completed),
-                ),
-              ),
-              child: const Text('Completed'),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

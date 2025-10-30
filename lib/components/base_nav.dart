@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task_finch/screens/completed_screen.dart';
 import 'package:task_finch/theming/constants.dart';
 
 class NavItem {
@@ -28,6 +29,14 @@ class BaseNav extends StatelessWidget {
           ),
     ),
     NavItem(
+      icon: Icon(Icons.check),
+      label: 'Completed',
+      action:
+          (BuildContext context) => Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (context) => CompletedScreen())),
+    ),
+    NavItem(
       // SEARCH IS NOT CURRENTLY FUNCTIONAL
       icon: Icon(Icons.search),
       label: 'Search',
@@ -51,10 +60,19 @@ class BaseNav extends StatelessWidget {
               child: IconButton.filled(
                 disabledColor: Colors.white,
                 style: ButtonStyle(
-                  backgroundColor: selectedIndex == null || selectedIndex != index ? WidgetStatePropertyAll(Colors.transparent) : WidgetStatePropertyAll(secondaryColour)
+                  backgroundColor:
+                      selectedIndex == null || selectedIndex != index
+                          ? WidgetStatePropertyAll(Colors.transparent)
+                          : WidgetStatePropertyAll(secondaryColour),
                 ),
-                color: selectedIndex == null || selectedIndex != index ? Colors.black : Colors.white,
-                onPressed: selectedIndex == null || selectedIndex != index ? () => navDestination.action(context) : (null),
+                color:
+                    selectedIndex == null || selectedIndex != index
+                        ? Colors.black
+                        : Colors.white,
+                onPressed:
+                    selectedIndex == null || selectedIndex != index
+                        ? () => navDestination.action(context)
+                        : (null),
                 icon: navDestination.icon,
               ),
             ),
