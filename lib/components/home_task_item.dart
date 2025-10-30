@@ -11,8 +11,6 @@ import '../main.dart';
 import '../task_get_provider.dart';
 import '../theming/constants.dart';
 
-
-
 class HomeTaskItem extends HookConsumerWidget {
   const HomeTaskItem({super.key});
 
@@ -20,8 +18,14 @@ class HomeTaskItem extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final task = ref.watch(currentTask);
 
-    final children = ref.watch(subtasksForTaskId(task.id)).value?.where((task) => task.completed == false);
-
+    final children = ref
+        .watch(subtasksForTaskId(task.id))
+        .value
+        ?.where((task) => task.completed == false);
+    final completedChildren = ref
+        .watch(subtasksForTaskId(task.id))
+        .value
+        ?.where((task) => task.completed == true);
 
     bool isCompleted = task.completed;
 
@@ -68,8 +72,11 @@ class HomeTaskItem extends HookConsumerWidget {
                     alignment: Alignment.centerLeft,
                     child: PriorityPill(priority: task.priority),
                   ),
-                  if(children != null && children.length > 0)
-                    ChildrenBadge(childrenCount: children.length),
+                  if (children != null && children.length > 0)
+                    ChildrenBadge(
+                      incompleteChildrenCount: children.length,
+                      completedChildrenCount: completedChildren?.length ?? 0,
+                    ),
                   Text(
                     'Task #${task.rId}',
                     style: TextStyle(color: Colors.grey),
@@ -96,10 +103,13 @@ class HomeTaskItem extends HookConsumerWidget {
                       ),
                     ),
                   ),
-
                 ],
               ),
-              if(task.completed) Text('Completed at ${task.completedOn!.toRenderedDate()}', style: TextStyle(fontSize: 14),)
+              if (task.completed)
+                Text(
+                  'Completed at ${task.completedOn!.toRenderedDate()}',
+                  style: TextStyle(fontSize: 14),
+                ),
             ],
           ),
         ),

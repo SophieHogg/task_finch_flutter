@@ -20,8 +20,10 @@ class TaskItemSubmenuItem {
 }
 
 void onDeleteTask(WidgetRef ref, BuildContext context, Task task) async {
-
-  final children = ref.watch(subtasksForTaskId(task.id)).value?.where((task) => task.completed == false);
+  final children = ref
+      .watch(subtasksForTaskId(task.id))
+      .value
+      ?.where((task) => task.completed == false);
 
   showDialog(
     context: context,
@@ -41,12 +43,17 @@ void onDeleteTask(WidgetRef ref, BuildContext context, Task task) async {
   );
 }
 
-List<TaskItemSubmenuItem> submenuItemList(WidgetRef ref, BuildContext context, Task task) {
+List<TaskItemSubmenuItem> submenuItemList(
+  WidgetRef ref,
+  BuildContext context,
+  Task task,
+) {
   return [
     TaskItemSubmenuItem(
       label: Text(style: TextStyle(color: dangerColour), 'Delete'),
       icon: Icon(color: dangerColour, Icons.delete),
-      onPressed: () { onDeleteTask(ref, context, task);
+      onPressed: () {
+        onDeleteTask(ref, context, task);
       },
     ),
   ];
@@ -57,11 +64,15 @@ class TaskItem extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
-
     final task = ref.watch(currentTask);
-    final children = ref.watch(subtasksForTaskId(task.id)).value;
-
+    final children = ref
+        .watch(subtasksForTaskId(task.id))
+        .value
+        ?.where((task) => task.completed == false);
+    final completedChildren = ref
+        .watch(subtasksForTaskId(task.id))
+        .value
+        ?.where((task) => task.completed == true);
 
     bool isCompleted = task.completed;
 
@@ -108,8 +119,11 @@ class TaskItem extends HookConsumerWidget {
                     alignment: Alignment.centerLeft,
                     child: PriorityPill(priority: task.priority),
                   ),
-                  if(children != null && children.length > 0)
-                    ChildrenBadge(childrenCount: children.length),
+                  if (children != null && children.length > 0)
+                    ChildrenBadge(
+                      incompleteChildrenCount: children.length,
+                      completedChildrenCount: completedChildren?.length ?? 0,
+                    ),
                   Text(
                     'Task #${task.rId}',
                     style: TextStyle(color: Colors.grey),
@@ -119,9 +133,7 @@ class TaskItem extends HookConsumerWidget {
               Row(
                 spacing: 8,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(task.title, maxLines: 3),
-                ],
+                children: [Text(task.title, maxLines: 3)],
               ),
             ],
           ),
