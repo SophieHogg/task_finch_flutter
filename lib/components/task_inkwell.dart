@@ -24,30 +24,32 @@ class TaskInkwell extends StatelessWidget {
         children: [
           Text('Parent task: '),
 
-          InkWell(
-            borderRadius: BorderRadius.all(Radius.circular(100)),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => TaskDetailScreen(taskId: taskItem.id),
+          Expanded(
+            child: InkWell(
+              borderRadius: BorderRadius.all(Radius.circular(100)),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => TaskDetailScreen(taskId: taskItem.id),
+                  ),
+                );
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  border: BoxBorder.all(color: Colors.grey),
+                  borderRadius: BorderRadius.all(Radius.circular(100)),
                 ),
-              );
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                border: BoxBorder.all(color: Colors.grey),
-                borderRadius: BorderRadius.all(Radius.circular(100)),
-              ),
-              child: Padding(
-                // Adjust for visual weight of priority circle
-                padding: const EdgeInsets.fromLTRB(10, 4, 16, 4),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  spacing: 8,
-                  children: [
-                    Text(taskItem.title),
-                    PriorityCircle(priority: taskItem.priority),
-                  ],
+                child: Padding(
+                  // Adjust for visual weight of priority circle
+                  padding: const EdgeInsets.fromLTRB(10, 4, 16, 4),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: 8,
+                    children: [
+                      Flexible(child: Text(taskItem.title, maxLines: 1, overflow: TextOverflow.ellipsis,)),
+                      PriorityCircle(priority: taskItem.priority),
+                    ],
+                  ),
                 ),
               ),
             ),

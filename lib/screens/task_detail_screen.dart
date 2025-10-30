@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:task_finch/components/base_nav.dart';
+import 'package:task_finch/components/label_input.dart';
 import 'package:task_finch/components/no_attribute_text.dart';
 import 'package:task_finch/components/no_subtask_list.dart';
 import 'package:task_finch/components/task_inkwell.dart';
@@ -68,11 +69,12 @@ class TaskDetailScreen extends HookConsumerWidget {
     final subtaskList = ref.watch(subtasksForTaskId(task.id));
     final parent = _parent(task.parentId, ref);
     final parentValue = parent?.value;
+    bool isCompleted = task.completed;
 
     final subtaskListLength = subtaskList.value?.length ?? 0;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Task Details'),
+        title: Text('Task #${task.rId} - Details'),
         actions: [
           IconButton(
             onPressed:
@@ -97,16 +99,58 @@ class TaskDetailScreen extends HookConsumerWidget {
             spacing: 16.0,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 4,
+                children: [
+                  if (parentValue != null) ...[
+                    TaskInkwell(task: parentValue),
+                    Divider(),
+                  ],
+                  Row(
+                    spacing: 8,
+                    children: [
+                      Transform.scale(
+                        scale: 1.5,
+                        child: Checkbox(
+                          value: isCompleted,
+                          onChanged: (value) async {
+                            if (value == null) return;
+                            isCompleted = value;
+                            if (value)
+                              ref
+                                  .read(taskListProvider.notifier)
+                                  .markTaskComplete(task.id);
+                            else
+                              ref
+                                  .read(taskListProvider.notifier)
+                                  .markTaskIncomplete(task.id);
+                          },
+                        ),
+                      ),
+
+                      Flexible(
+                        child: Text(
+                          softWrap: true,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 3,
+                          taskTitle,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 30,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
               if (task.completedOn case final completedOn?)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   spacing: 16,
                   children: [
-                    Icon(
-                      Icons.checklist_rtl_rounded,
-                      size: 28,
-                      color: dangerColour,
-                    ),
+                    Icon(Icons.task_alt, size: 28, color: positiveColourTop),
                     Text('Completed', style: TextStyle(fontSize: 18)),
                     Text(
                       completedOn.toRenderedDate(),
@@ -114,45 +158,17 @@ class TaskDetailScreen extends HookConsumerWidget {
                     ),
                   ],
                 ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 4,
-                children: [
-                  if (parentValue != null) TaskInkwell(task: parentValue),
-                  Text(
-                    taskTitle,
-                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 30),
-                  ),
-                  Text(
-                    'Task ${task.rId}',
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                ],
+              LabelInput(
+                label: 'Description:',
+                field:
+                    description.isNotEmpty
+                        ? Text(description, style: TextStyle(fontSize: 16))
+                        : NoAttributeText(text: 'No description provided'),
               ),
 
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 4.0,
-                children: [
-                  Text(
-                    'Description:',
-                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
-                  ),
-                  description.isNotEmpty
-                      ? Text(description, style: TextStyle(fontSize: 16))
-                      : NoAttributeText(text: 'No description provided'),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 4.0,
-                children: [
-                  Text(
-                    'Priority:',
-                    style: TextStyle(fontWeight: FontWeight.w700),
-                  ),
-                  PriorityIndicator(priority: task.priority),
-                ],
+              LabelInput(
+                label: 'Priority:',
+                field: PriorityIndicator(priority: task.priority),
               ),
 
               Column(

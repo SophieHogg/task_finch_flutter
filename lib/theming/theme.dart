@@ -24,6 +24,14 @@ class TFTheme extends StatelessWidget {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))
           ),
         ),
+        checkboxTheme: existingTheme.checkboxTheme.copyWith(
+          fillColor: WidgetStateProperty.resolveWith(((Set<WidgetState> states) {
+            if (states.contains(WidgetState.selected)) {
+              return baseColour; // Color when checked
+            }
+            return Colors.transparent; // Color when unchecked
+          }),),
+        ),
         scaffoldBackgroundColor: lightBackgroundColour,
         appBarTheme: existingTheme.appBarTheme.copyWith(
           backgroundColor: baseColour,

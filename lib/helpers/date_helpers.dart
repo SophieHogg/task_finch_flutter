@@ -2,6 +2,6 @@
 
 extension renderDate on DateTime {
   String toRenderedDate() {
-    return '${this.day}/${this.month}/${this.year} ${this.hour}:${this.minute} ${this.hour > 12 ? 'PM' : 'AM'} ';
+    return '${this.day}/${this.month}/${this.year} ${this.hour}:${this.minute} ';
   }
 }

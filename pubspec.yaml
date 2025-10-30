@@ -1,5 +1,5 @@
 name: task_finch
-description: A new Flutter project.
+description: A task to do list with infinite nesting.
 publish_to: "none"
 
 environment:
