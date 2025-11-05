@@ -6,6 +6,7 @@ import '../data/database.dart';
 
 class PriorityPill extends StatelessWidget {
   const PriorityPill({super.key, required this.priority});
+
   final Priority priority;
 
   @override
@@ -13,9 +14,52 @@ class PriorityPill extends StatelessWidget {
     return Container(
       alignment: Alignment.center,
       width: 75,
-      decoration: BoxDecoration(gradient: priorityGradients[priority], borderRadius: BorderRadius.circular(20)),
-        padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 10.0),
-        child: Text(priority.name.toSentenceCase(), style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700))
+      decoration: BoxDecoration(
+        gradient: priorityGradients[priority],
+        borderRadius: BorderRadius.circular(20),
+      ),
+      padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 10.0),
+      child: Text(
+        priority.name.toSentenceCase(),
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+}
+
+class SelectablePriorityPill extends StatelessWidget {
+  const SelectablePriorityPill({
+    super.key,
+    required this.priority,
+    required this.selected,
+  });
+
+  final Priority priority;
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.center,
+      width: 75,
+      decoration: BoxDecoration(
+        gradient: selected ? priorityGradients[priority] : null,
+        color: selected ? null : Colors.grey[400],
+        borderRadius: BorderRadius.circular(20),
+      ),
+      padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 10.0),
+      child: Text(
+        priority.name.toSentenceCase(),
+        style: TextStyle(
+          color: selected ? Colors.white : Colors.black,
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
     );
   }
 }

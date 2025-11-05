@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:task_finch/components/base_nav.dart';
 import 'package:task_finch/main.dart';
 import 'package:task_finch/screens/completed_screen.dart';
+import 'package:task_finch/screens/search_screen.dart';
 
 class MainScreen extends HookWidget {
   const MainScreen();
@@ -36,7 +37,7 @@ class MainScreen extends HookWidget {
             onGenerateRoute:
                 (route) => MaterialPageRoute(
                   settings: route,
-                  builder: (_) => Placeholder(),
+                  builder: (_) => SearchScreen(),
                 ),
           ),
         ],

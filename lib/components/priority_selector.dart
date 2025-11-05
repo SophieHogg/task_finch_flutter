@@ -14,7 +14,7 @@ class PrioritySelector extends HookWidget {
     required this.onChangePriority,
   });
 
-  final Priority priority;
+  final Priority? priority;
   final void Function(Priority priority) onChangePriority;
 
   // ease out back jumps past the edges too far
@@ -33,24 +33,25 @@ class PrioritySelector extends HookWidget {
         color: Colors.transparent,
         child: Stack(
           children: [
-            AnimatedSlide(
-              offset: Offset(2 - priority.index.toDouble(), 0),
-              duration: Duration(milliseconds: 300),
-              curve: _betterEaseOutBack,
-              child: FractionallySizedBox(
-                widthFactor: 1 / 3,
-                child: Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.black.withAlpha(40),
-                      borderRadius: BorderRadius.circular(100),
-                      border: Border.all(color: Colors.white, width: 2),
+            if(priority case final priority?)
+              AnimatedSlide(
+                offset: Offset(2 - priority.index.toDouble(), 0),
+                duration: Duration(milliseconds: 300),
+                curve: _betterEaseOutBack,
+                child: FractionallySizedBox(
+                  widthFactor: 1 / 3,
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withAlpha(40),
+                        borderRadius: BorderRadius.circular(100),
+                        border: Border.all(color: Colors.white, width: 2),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
             Row(
               children:
               [

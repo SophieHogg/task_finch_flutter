@@ -21,6 +21,7 @@ class TFTheme extends StatelessWidget {
           style: OutlinedButton.styleFrom(
             backgroundColor: Colors.white,
             padding: EdgeInsets.all(16),
+            side: BorderSide(width: 2),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))
           ),
         ),
@@ -40,6 +41,8 @@ class TFTheme extends StatelessWidget {
           iconTheme: IconThemeData(size: 20, color: Colors.white),
         ),
         inputDecorationTheme: existingTheme.inputDecorationTheme.copyWith(
+          hintStyle: TextStyle(color: Colors.grey),
+          contentPadding: EdgeInsets.all(0),
           filled: true,
           fillColor: lightTopColour,
           focusedBorder: OutlineInputBorder(
