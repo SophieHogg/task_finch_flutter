@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:task_finch/components/label_input.dart';
+import 'package:task_finch/components/priority_filter.dart';
 import 'package:task_finch/components/priority_pill.dart';
 import 'package:task_finch/components/priority_selector.dart';
 import 'package:task_finch/components/priority_wide_indicator.dart';
+import 'package:task_finch/dialogs/edit_task_dialog.dart';
 import 'package:task_finch/theming/constants.dart';
-
+import 'package:collection/collection.dart';
 import '../data/database.dart';
 
 class SearchScreen extends HookConsumerWidget {
@@ -58,32 +61,37 @@ class _FilterDialog extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final priorities = useState<Set<Priority>>({});
+    final priorities = useState<Set<Priority>>(priorityColours.keys.toSet());
+    final completed = useState<Set<Priority>>(priorityColours.keys.toSet());
+
     return AlertDialog(
-      title: Text('Filtah'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
+      actions: [
+      ],
+      title: Column(
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              InkWell(
-                onTap: () {
-                },
-                child: SelectablePriorityPill(
-                  priority: Priority.low,
-                  selected: !priorities.value.contains(Priority.low),
-                ),
-              ),
-              SelectablePriorityPill(
-                priority: Priority.medium,
-                selected: !priorities.value.contains(Priority.medium),
-              ),
-              SelectablePriorityPill(
-                priority: Priority.high,
-                selected: !priorities.value.contains(Priority.high),
-              ),
-            ],
+            Text('Filter', style: TextStyle(fontSize: 20),),
+            Icon(Icons.filter_alt),
+          ],),
+          Divider()
+        ],
+      ),
+      content: Column(
+        spacing: 8,
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          LabelInput(
+            label: "Priority",
+            field: PriorityFilter(
+              selectedPriorities: priorities.value,
+              onPriorityChange:
+                  (newPriorities) => priorities.value = newPriorities,
+            ),
           ),
+          LabelInput(label: 'Completed', field: Placeholder())
         ],
       ),
     );

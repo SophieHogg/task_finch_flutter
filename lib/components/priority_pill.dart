@@ -30,36 +30,3 @@ class PriorityPill extends StatelessWidget {
     );
   }
 }
-
-class SelectablePriorityPill extends StatelessWidget {
-  const SelectablePriorityPill({
-    super.key,
-    required this.priority,
-    required this.selected,
-  });
-
-  final Priority priority;
-  final bool selected;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      width: 75,
-      decoration: BoxDecoration(
-        gradient: selected ? priorityGradients[priority] : null,
-        color: selected ? null : Colors.grey[400],
-        borderRadius: BorderRadius.circular(20),
-      ),
-      padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 10.0),
-      child: Text(
-        priority.name.toSentenceCase(),
-        style: TextStyle(
-          color: selected ? Colors.white : Colors.black,
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-    );
-  }
-}
