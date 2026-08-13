@@ -48,6 +48,7 @@ class HomeTaskItem extends HookConsumerWidget {
           );
         },
         leading: Checkbox(
+          visualDensity: VisualDensity.compact,
           value: isCompleted,
           onChanged: (value) async {
             if (value == null) return;

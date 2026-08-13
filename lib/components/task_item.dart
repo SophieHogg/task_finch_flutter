@@ -97,6 +97,7 @@ class TaskItem extends HookConsumerWidget {
           );
         },
         leading: Checkbox(
+          visualDensity: VisualDensity.compact,
           value: isCompleted,
           onChanged: (value) async {
             if (value == null) return;
@@ -107,17 +108,18 @@ class TaskItem extends HookConsumerWidget {
               ref.read(taskListProvider.notifier).markTaskIncomplete(task.id);
           },
         ),
-        title: Opacity(
-          opacity: task.completed ? 1 : 1,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 4,
-            children: [
-              Row(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 4,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
+                    spacing: 4,
                     children: [
                       Align(
                         alignment: Alignment.centerLeft,
@@ -134,57 +136,69 @@ class TaskItem extends HookConsumerWidget {
                   Text('#${task.rId}', style: TextStyle(color: Colors.grey)),
                 ],
               ),
-              Opacity(
-                opacity: isCompleted ? 0.6 : 1,
-                child: Text(
-                  task.title,
-                  maxLines: 3,
-                  style: TextStyle(fontWeight: FontWeight.w700),
-                ),
-              ),
+            ),
 
-              if (task.completed)
-                Text(
-                  'Completed at ${task.completedOn!.toRenderedDate()}',
-                  style: TextStyle(fontSize: 13, color: Colors.grey),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Opacity(
+                      opacity: isCompleted ? 0.6 : 1,
+                      child: Text(
+                        task.title,
+                        maxLines: 3,
+                        style: TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                    if (task.completed)
+                      Text(
+                        'Completed at ${task.completedOn!.toRenderedDate()}',
+                        style: TextStyle(fontSize: 13, color: Colors.grey),
+                      ),
+                  ],
                 ),
-            ],
-          ),
-        ),
-        trailing: SizedBox(
-          width: 50,
-          child: SubmenuButton(
-            style: ButtonStyle(
-              shape: WidgetStateProperty.all(
-                RoundedRectangleBorder(
-                  borderRadius: BorderRadiusGeometry.circular(30),
-                ),
-              ),
-            ),
-            child: Icon(Icons.more_horiz_rounded),
-            alignmentOffset: Offset(-30, 0),
-            key: key.value,
-            onFocusChange: (isFocused) {
-              if (!isFocused) key.value = ValueKey(key.value.value + 1);
-            },
-            menuStyle: MenuStyle(
-              alignment: Alignment.bottomLeft,
-              shape: WidgetStatePropertyAll(
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-              ),
-            ),
-            menuChildren: [
-              for (final menuItem in submenuItemList(ref, context, task))
-                MenuItemButton(
-                  onPressed: menuItem.onPressed,
-                  leadingIcon: menuItem.icon,
-                  style: ButtonStyle(
-                    minimumSize: WidgetStatePropertyAll(Size(150, 0)),
+                SizedBox(
+                  width: 50,
+                  height: 40,
+                  child: SubmenuButton(
+                    style: ButtonStyle(
+                      shape: WidgetStateProperty.all(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadiusGeometry.circular(30),
+                        ),
+                      ),
+                    ),
+                    child: Icon(Icons.more_horiz_rounded),
+                    alignmentOffset: Offset(-30, 0),
+                    key: key.value,
+                    onFocusChange: (isFocused) {
+                      if (!isFocused) key.value = ValueKey(key.value.value + 1);
+                    },
+                    menuStyle: MenuStyle(
+                      alignment: Alignment.bottomLeft,
+                      shape: WidgetStatePropertyAll(
+                        RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      ),
+                    ),
+                    menuChildren: [
+                      for (final menuItem in submenuItemList(ref, context, task))
+                        MenuItemButton(
+                          onPressed: menuItem.onPressed,
+                          leadingIcon: menuItem.icon,
+                          style: ButtonStyle(
+                            minimumSize: WidgetStatePropertyAll(Size(150, 0)),
+                          ),
+                          child: menuItem.label ?? SizedBox.shrink(),
+                        ),
+                    ],
                   ),
-                  child: menuItem.label ?? SizedBox.shrink(),
                 ),
-            ],
-          ),
+              ],
+            ),
+          ],
         ),
       ),
     );
