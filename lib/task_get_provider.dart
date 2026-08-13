@@ -30,7 +30,7 @@ final subtasksForTaskId = FutureProvider.family<List<Task>, String>((
   ref.watch(taskListProvider);
   return await (database.select(database.tasks)
         ..where((task) => task.parentId.isValue(id))
-        ..orderBy([(t) => OrderingTerm(expression: t.completed)]))
+        ..orderBy([(t) => OrderingTerm(expression: t.completed), (t) => OrderingTerm(expression: t.priority)]))
       .get();
 });
 

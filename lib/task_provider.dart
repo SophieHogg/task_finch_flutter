@@ -26,7 +26,12 @@ class TaskList extends AsyncNotifier<List<Task>> {
   @override
   Future<List<Task>> build() async {
     return (await database.select(database.tasks)
-      ..where((task) => task.parentId.isNull())).get();
+          ..where((task) => task.parentId.isNull())
+          ..orderBy([
+            (t) => OrderingTerm(expression: t.completed),
+            (t) => OrderingTerm(expression: t.priority),
+          ]))
+        .get();
   }
 
   void addTask(TaskAddRequest taskAddRequest) async {
