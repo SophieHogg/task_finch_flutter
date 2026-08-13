@@ -116,19 +116,22 @@ class TaskItem extends HookConsumerWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: PriorityPill(priority: task.priority),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: PriorityPill(priority: task.priority),
+                      ),
+                      if (children != null && children.length > 0)
+                        ChildrenBadge(
+                          incompleteChildrenCount: children.length,
+                          completedChildrenCount:
+                              completedChildren?.length ?? 0,
+                        ),
+                    ],
                   ),
-                  if (children != null && children.length > 0)
-                    ChildrenBadge(
-                      incompleteChildrenCount: children.length,
-                      completedChildrenCount: completedChildren?.length ?? 0,
-                    ),
-                  Text(
-                    'Task #${task.rId}',
-                    style: TextStyle(color: Colors.grey),
-                  ),
+                  Text('#${task.rId}', style: TextStyle(color: Colors.grey)),
                 ],
               ),
               Opacity(
@@ -164,12 +167,20 @@ class TaskItem extends HookConsumerWidget {
             onFocusChange: (isFocused) {
               if (!isFocused) key.value = ValueKey(key.value.value + 1);
             },
-            menuStyle: MenuStyle(alignment: Alignment.bottomLeft),
+            menuStyle: MenuStyle(
+              alignment: Alignment.bottomLeft,
+              shape: WidgetStatePropertyAll(
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              ),
+            ),
             menuChildren: [
               for (final menuItem in submenuItemList(ref, context, task))
                 MenuItemButton(
                   onPressed: menuItem.onPressed,
                   leadingIcon: menuItem.icon,
+                  style: ButtonStyle(
+                    minimumSize: WidgetStatePropertyAll(Size(150, 0)),
+                  ),
                   child: menuItem.label ?? SizedBox.shrink(),
                 ),
             ],

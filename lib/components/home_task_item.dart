@@ -62,26 +62,33 @@ class HomeTaskItem extends HookConsumerWidget {
           opacity: task.completed ? 0.6 : 1,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 4,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                spacing: 4,
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: PriorityPill(priority: task.priority),
-                  ),
-                  if (children != null && children.length > 0)
-                    ChildrenBadge(
-                      incompleteChildrenCount: children.length,
-                      completedChildrenCount: completedChildren?.length ?? 0,
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  spacing: 4,
+                  children: [
+                    Row(
+                      spacing: 4,
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: PriorityPill(priority: task.priority),
+                        ),
+                        if (children != null && children.length > 0)
+                          ChildrenBadge(
+                            incompleteChildrenCount: children.length,
+                            completedChildrenCount:
+                                completedChildren?.length ?? 0,
+                          ),
+                      ],
                     ),
-                  Text(
-                    'Task #${task.rId}',
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                ],
+                    Text('#${task.rId}', style: TextStyle(color: Colors.grey)),
+                  ],
+                ),
               ),
 
               Row(
@@ -103,39 +110,45 @@ class HomeTaskItem extends HookConsumerWidget {
                       ),
                     ),
                   ),
+                  SizedBox(
+                    width: 50,
+                    height: 40,
+                    child: SubmenuButton(
+                      style: ButtonStyle(
+                        shape: WidgetStateProperty.all(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadiusGeometry.circular(30),
+                          ),
+                        ),
+                      ),
+                      child: Icon(Icons.more_horiz_rounded),
+                      alignmentOffset: Offset(-50, 0),
+                      key: key.value,
+                      onFocusChange: (isFocused) {
+                        if (!isFocused)
+                          key.value = ValueKey(key.value.value + 1);
+                      },
+                      menuStyle: MenuStyle(alignment: Alignment.bottomLeft),
+                      menuChildren: [
+                        for (final menuItem in submenuItemList(
+                          ref,
+                          context,
+                          task,
+                        ))
+                          MenuItemButton(
+                            onPressed: menuItem.onPressed,
+                            leadingIcon: menuItem.icon,
+                            child: menuItem.label ?? SizedBox.shrink(),
+                          ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
               if (task.completed)
                 Text(
                   'Completed at ${task.completedOn!.toRenderedDate()}',
                   style: TextStyle(fontSize: 14),
-                ),
-            ],
-          ),
-        ),
-        trailing: SizedBox(
-          width: 50,
-          child: SubmenuButton(
-            style: ButtonStyle(
-              shape: WidgetStateProperty.all(
-                RoundedRectangleBorder(
-                  borderRadius: BorderRadiusGeometry.circular(30),
-                ),
-              ),
-            ),
-            child: Icon(Icons.more_horiz_rounded),
-            alignmentOffset: Offset(-50, 0),
-            key: key.value,
-            onFocusChange: (isFocused) {
-              if (!isFocused) key.value = ValueKey(key.value.value + 1);
-            },
-            menuStyle: MenuStyle(alignment: Alignment.bottomLeft),
-            menuChildren: [
-              for (final menuItem in submenuItemList(ref, context, task))
-                MenuItemButton(
-                  onPressed: menuItem.onPressed,
-                  leadingIcon: menuItem.icon,
-                  child: menuItem.label ?? SizedBox.shrink(),
                 ),
             ],
           ),

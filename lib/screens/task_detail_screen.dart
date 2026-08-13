@@ -73,7 +73,7 @@ class TaskDetailScreen extends HookConsumerWidget {
     final subtaskListLength = subtaskList.value?.length ?? 0;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Task #${task.rId} - Details'),
+        title: Text('#${task.rId} - Details'),
         actions: [
           IconButton(
             onPressed:
