@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:task_finch/components/completed_filter.dart';
 import 'package:task_finch/components/label_input.dart';
 import 'package:task_finch/components/priority_filter.dart';
-import 'package:task_finch/components/priority_pill.dart';
-import 'package:task_finch/components/priority_selector.dart';
-import 'package:task_finch/components/priority_wide_indicator.dart';
 import 'package:task_finch/dialogs/edit_task_dialog.dart';
 import 'package:task_finch/theming/constants.dart';
-import 'package:collection/collection.dart';
+
 import '../data/database.dart';
 
 class SearchScreen extends HookConsumerWidget {
@@ -62,24 +60,37 @@ class _FilterDialog extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final priorities = useState<Set<Priority>>(priorityColours.keys.toSet());
-    final completed = useState<Set<Priority>>(priorityColours.keys.toSet());
+    final completed = useState<Set<String>>(
+      ['Completed', 'Incomplete'].toSet(),
+    );
 
     return AlertDialog(
       actions: [
+        ElevatedButton(
+          onPressed:
+              completed.value.length > 0 && priorities.value.length > 0
+                  ? () {}
+                  : null,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [Icon(Icons.filter_alt), Text('Filter')],
+          ),
+        ),
       ],
       title: Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-            Text('Filter', style: TextStyle(fontSize: 20),),
-            Icon(Icons.filter_alt),
-          ],),
-          Divider()
+              Text('Filter', style: TextStyle(fontSize: 20)),
+              Icon(Icons.filter_alt),
+            ],
+          ),
+          Divider(),
         ],
       ),
       content: Column(
-        spacing: 8,
+        spacing: 16,
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -91,7 +102,13 @@ class _FilterDialog extends HookWidget {
                   (newPriorities) => priorities.value = newPriorities,
             ),
           ),
-          LabelInput(label: 'Completed', field: Placeholder())
+          LabelInput(
+            label: 'Completed',
+            field: CompletedFilter(
+              selectedOptions: completed.value,
+              onChange: (newCompleted) => completed.value = newCompleted,
+            ),
+          ),
         ],
       ),
     );
