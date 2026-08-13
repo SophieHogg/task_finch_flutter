@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hooks_riverpod/legacy.dart';
 import 'package:task_finch/components/circle_icon.dart';
+import 'package:task_finch/components/empty_state.dart';
 import 'package:task_finch/components/home_task_item.dart';
 import 'package:task_finch/data/database.dart';
 import 'package:task_finch/dialogs/add_task_dialog.dart';
@@ -61,7 +62,12 @@ class Home extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tasks = (ref.watch(taskListProvider).value?.where((task) => task.completed == false)) ?? [];
+    final tasks =
+        (ref
+            .watch(taskListProvider)
+            .value
+            ?.where((task) => task.completed == false)) ??
+        [];
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -72,28 +78,34 @@ class Home extends HookConsumerWidget {
 
         title: Text('Task Finch'),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            spacing: 8,
-            children: [
-              Column(
-                spacing: 8,
-                children: [
-                  for (final task in tasks) ...[
-                    // if (i > 0) const Divider(height: 0),
-                    ProviderScope(
-                      overrides: [currentTask.overrideWithValue(task)],
-                      child: const HomeTaskItem(),
-                    ),
-                  ],
-                ],
+      body:
+          tasks.isEmpty
+              ? EmptyState(
+                text: "No tasks created",
+                taglineText: "Create a task to get started!",
+              )
+              : SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Column(
+                    spacing: 8,
+                    children: [
+                      Column(
+                        spacing: 8,
+                        children: [
+                          for (final task in tasks) ...[
+                            // if (i > 0) const Divider(height: 0),
+                            ProviderScope(
+                              overrides: [currentTask.overrideWithValue(task)],
+                              child: const HomeTaskItem(),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ],
-          ),
-        ),
-      ),
       floatingActionButton: FloatingActionButton(
         shape: const CircleBorder(),
         backgroundColor: positiveColour,
@@ -122,4 +134,3 @@ final currentTask = Provider<Task>(
   dependencies: const [],
   (ref) => throw UnimplementedError(),
 );
-
