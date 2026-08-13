@@ -42,13 +42,13 @@ class TFTheme extends StatelessWidget {
         ),
         inputDecorationTheme: existingTheme.inputDecorationTheme.copyWith(
           hintStyle: TextStyle(color: Colors.grey),
-          contentPadding: EdgeInsets.all(0),
+          contentPadding: EdgeInsets.all(10),
           filled: true,
           fillColor: lightTopColour,
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(20),
           ),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
           alignLabelWithHint: true,
           floatingLabelBehavior: FloatingLabelBehavior.always,
         ),

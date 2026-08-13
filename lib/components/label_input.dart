@@ -14,7 +14,7 @@ class LabelInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: 4.0,
+      spacing: 8.0,
       children: [
         Row(
           children: [

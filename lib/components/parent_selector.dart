@@ -82,7 +82,7 @@ class ParentSelector extends HookConsumerWidget {
         elevation: WidgetStatePropertyAll(6),
         backgroundColor: WidgetStatePropertyAll(lightTopColour),
         shape: WidgetStatePropertyAll(
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         ),
         maximumSize: WidgetStatePropertyAll(Size.infinite),
       ),
