@@ -72,6 +72,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                                   controller: titleController,
                                   autovalidateMode:
                                       AutovalidateMode.onUserInteraction,
+                                  textCapitalization: TextCapitalization.sentences,
                                   decoration: const InputDecoration(),
                                   validator: (String? value) {
                                     if ((value == null || value.trim() == ''))
@@ -89,7 +90,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                                   controller: descriptionController,
                                   autovalidateMode:
                                       AutovalidateMode.onUserInteraction,
-
+                                  textCapitalization: TextCapitalization.sentences,
                                   minLines: 3,
                                   maxLines: 5,
                                 ),

@@ -119,6 +119,7 @@ class EditTaskDialog extends HookConsumerWidget {
                               field: TextFormField(
                                 autovalidateMode:
                                     AutovalidateMode.onUserInteraction,
+                                textCapitalization: TextCapitalization.sentences,
                                 validator: (String? value) {
                                   if ((value == null || value.trim() == ''))
                                     return 'Title is required';
