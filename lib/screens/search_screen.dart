@@ -20,13 +20,13 @@ class SearchScreen extends HookConsumerWidget {
       CompletionStatus.values.toSet(),
     );
     final searchTerm = useState<String>('');
+    final searchTermController = useTextEditingController();
     final filteredTasks = ref.watch(
       taskByFilter((searchTerm.value, priorities.value, statuses.value)),
     );
-    final hasSearched =
-        searchTerm.value.isNotEmpty ||
-        priorities.value.length != 3 ||
-        statuses.value.length != 2;
+    final hasActiveFilters =
+        priorities.value.length != 3 || statuses.value.length != 2;
+    final hasSearched = searchTerm.value.isNotEmpty || hasActiveFilters;
     return Scaffold(
       appBar: AppBar(),
       body: Padding(
@@ -38,16 +38,31 @@ class SearchScreen extends HookConsumerWidget {
               children: [
                 Expanded(
                   child: TextField(
+                    controller: searchTermController,
                     onChanged: (term) => searchTerm.value = term,
                     decoration: InputDecoration(
                       hintText: 'Search...',
                       prefixIcon: Icon(Icons.search),
+                      suffixIcon:
+                          searchTerm.value.isNotEmpty
+                              ? FittedBox(
+                                child: IconButton(
+                                  icon: Icon(Icons.clear),
+                                  onPressed: () {
+                                    searchTerm.value = '';
+                                    searchTermController.text = '';
+                                  },
+                                ),
+                              )
+                              : null,
                     ),
                   ),
                 ),
 
                 IconButton(
-                  style: IconButton.styleFrom(backgroundColor: baseColour),
+                  style: IconButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                  ),
                   onPressed: () async {
                     final filters = await showDialog<
                       ({
@@ -57,7 +72,10 @@ class SearchScreen extends HookConsumerWidget {
                     >(
                       context: context,
                       builder: (dialogContext) {
-                        return FilterDialog();
+                        return FilterDialog(
+                          passedPriorities: priorities.value,
+                          passedStatuses: statuses.value,
+                        );
                       },
                     );
                     if (filters != null) {
@@ -65,31 +83,43 @@ class SearchScreen extends HookConsumerWidget {
                       statuses.value = filters.filterStatus;
                     }
                   },
-                  icon: Icon(Icons.filter_alt, color: Colors.white),
+                  icon: Badge(
+                    smallSize: 8,
+                    isLabelVisible: hasActiveFilters,
+                    child: Icon(Icons.filter_alt, color: baseColour),
+                  ),
                 ),
               ],
             ),
-            if (hasSearched)
-              switch (filteredTasks) {
-                AsyncLoading<List<Task>>() => Expanded(child: EmptyState(text: 'Loading ...')),
-                AsyncData<List<Task>>() => Expanded(
-                  child: filteredTasks.value.isNotEmpty ?
-                  SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        for (final task in filteredTasks.value)
-                          ProviderScope(
-                            overrides: [currentTask.overrideWithValue(task)],
-                            child: const TaskItem(isOnHomeScreen: true),
-                          ),
-                      ],
-                    ),
-                  ) : Expanded(child: EmptyState(text: 'No results found')),
-                ),
-                AsyncError<List<Task>>() => EmptyState(text: ':( rip'),
-              }
-            else
-              Expanded(child: EmptyState(text: 'Filter or enter a search term')),
+            Expanded(
+              child:
+                  hasSearched
+                      ? switch (filteredTasks) {
+                        AsyncLoading<List<Task>>() => EmptyState(
+                          text: 'Loading ...',
+                        ),
+                        AsyncData<List<Task>>() =>
+                          filteredTasks.value.isNotEmpty
+                              ? SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    for (final task in filteredTasks.value)
+                                      ProviderScope(
+                                        overrides: [
+                                          currentTask.overrideWithValue(task),
+                                        ],
+                                        child: const TaskItem(
+                                          isOnHomeScreen: true,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              )
+                              : EmptyState(text: 'No results found'),
+                        AsyncError<List<Task>>() => EmptyState(text: ':( rip'),
+                      }
+                      : EmptyState(text: 'Filter or enter a search term'),
+            ),
           ],
         ),
       ),

@@ -5,18 +5,33 @@ import '../components/completed_filter.dart';
 import '../components/label_input.dart';
 import '../components/priority_filter.dart';
 import '../data/database.dart';
-import '../screens/task_detail_screen.dart';
 
 class FilterDialog extends HookWidget {
-  const FilterDialog({super.key});
+  final Set<Priority> passedPriorities;
+  final Set<CompletionStatus> passedStatuses;
+
+  const FilterDialog({
+    super.key,
+    required this.passedPriorities,
+    required this.passedStatuses,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final priorities = useState<Set<Priority>>(priorityColours.keys.toSet());
-    final completed = useState<Set<CompletionStatus>>(CompletionStatus.values.toSet());
+    final priorities = useState<Set<Priority>>(passedPriorities);
+    final completed = useState<Set<CompletionStatus>>(passedStatuses);
 
     return AlertDialog(
       actions: [
+        ElevatedButton(
+          onPressed: () {
+            Navigator.pop(context, (
+              filterStatus: CompletionStatus.values.toSet(),
+              filterPriority: Priority.values.toSet(),
+            ));
+          },
+          child: Text('Clear'),
+        ),
         ElevatedButton(
           onPressed:
               completed.value.length > 0 && priorities.value.length > 0
