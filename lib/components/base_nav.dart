@@ -54,7 +54,7 @@ class BaseNav extends StatelessWidget {
                   backgroundColor:
                       selectedIndex == null || selectedIndex != index
                           ? WidgetStatePropertyAll(Colors.transparent)
-                          : WidgetStatePropertyAll(secondaryColour),
+                          : WidgetStatePropertyAll(baseColour),
                 ),
                 color:
                     selectedIndex == null || selectedIndex != index
