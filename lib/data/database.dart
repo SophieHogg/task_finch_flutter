@@ -8,6 +8,10 @@ enum Priority {
   high, medium, low
 }
 
+enum CompletionStatus {
+  complete, incomplete
+}
+
 class Tasks extends Table {
   TextColumn get id => text().unique()();
   IntColumn get rId => integer().autoIncrement()();

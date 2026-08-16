@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:task_finch/components/split_selector.dart';
+import 'package:task_finch/data/database.dart';
 
 class CompletedFilter extends StatelessWidget {
   const CompletedFilter({
@@ -8,8 +9,8 @@ class CompletedFilter extends StatelessWidget {
     required this.onChange,
   });
 
-  final Set<String> selectedOptions;
-  final Function(Set<String>) onChange;
+  final Set<CompletionStatus> selectedOptions;
+  final Function(Set<CompletionStatus>) onChange;
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +24,8 @@ class CompletedFilter extends StatelessWidget {
       children: [
         Expanded(
           child: SplitSelector(
-            tConverter: (option) => option,
-            optionList: ['Completed', 'Incomplete'],
+            tConverter: (option) => option.name,
+            optionList: CompletionStatus.values,
             optionGradients: completeGradients.toList(),
             onTap: (tappedOption) {
               if (selectedOptions.contains(tappedOption)) {

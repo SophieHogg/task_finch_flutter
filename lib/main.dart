@@ -97,7 +97,7 @@ class Home extends HookConsumerWidget {
                             // if (i > 0) const Divider(height: 0),
                             ProviderScope(
                               overrides: [currentTask.overrideWithValue(task)],
-                              child: const TaskItem(isOnHomeScreen: true,),
+                              child: const TaskItem(isOnHomeScreen: true),
                             ),
                           ],
                         ],
