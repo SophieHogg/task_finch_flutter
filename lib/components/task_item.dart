@@ -142,23 +142,25 @@ class TaskItem extends HookConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Opacity(
-                      opacity: isCompleted ? 0.6 : 1,
-                      child: Text(
-                        task.title,
-                        maxLines: 3,
-                        style: TextStyle(fontWeight: FontWeight.w700),
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Opacity(
+                        opacity: isCompleted ? 0.6 : 1,
+                        child: Text(
+                          task.title,
+                          maxLines: 3,
+                          style: TextStyle(fontWeight: FontWeight.w700),
+                        ),
                       ),
-                    ),
-                    if (task.completed)
-                      Text(
-                        'Completed at ${task.completedOn!.toRenderedDate()}',
-                        style: TextStyle(fontSize: 13, color: Colors.grey),
-                      ),
-                  ],
+                      if (task.completed)
+                        Text(
+                          'Completed at ${task.completedOn!.toRenderedDate()}',
+                          style: TextStyle(fontSize: 13, color: Colors.grey),
+                        ),
+                    ],
+                  ),
                 ),
                 SizedBox(
                   width: 50,
