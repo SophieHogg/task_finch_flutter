@@ -3,7 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hooks_riverpod/legacy.dart';
 import 'package:task_finch/components/circle_icon.dart';
 import 'package:task_finch/components/empty_state.dart';
-import 'package:task_finch/components/home_task_item.dart';
+import 'package:task_finch/components/task_item.dart';
 import 'package:task_finch/data/database.dart';
 import 'package:task_finch/dialogs/add_task_dialog.dart';
 import 'package:task_finch/screens/main_screen.dart';
@@ -97,7 +97,7 @@ class Home extends HookConsumerWidget {
                             // if (i > 0) const Divider(height: 0),
                             ProviderScope(
                               overrides: [currentTask.overrideWithValue(task)],
-                              child: const HomeTaskItem(),
+                              child: const TaskItem(isOnHomeScreen: true,),
                             ),
                           ],
                         ],

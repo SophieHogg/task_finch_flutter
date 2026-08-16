@@ -61,7 +61,8 @@ List<TaskItemSubmenuItem> submenuItemList(
 }
 
 class TaskItem extends HookConsumerWidget {
-  const TaskItem({super.key});
+  final bool isOnHomeScreen;
+  const TaskItem({super.key, this.isOnHomeScreen = false});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -80,6 +81,8 @@ class TaskItem extends HookConsumerWidget {
     // key here to update state of submenu button to prevent bug when opening dialog
     // or navigating away that causes the button to remain focused and reopen menu
     final key = useState(ValueKey(0));
+
+
 
     return Card(
       color: lightTopColour,
@@ -151,7 +154,7 @@ class TaskItem extends HookConsumerWidget {
                         child: Text(
                           task.title,
                           maxLines: 3,
-                          style: TextStyle(fontWeight: FontWeight.w700),
+                          style: TextStyle(fontWeight: FontWeight.w700, fontSize: isOnHomeScreen ? 20: 16),
                         ),
                       ),
                       if (task.completed)
